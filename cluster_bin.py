@@ -1,11 +1,11 @@
 import config
-import time
 import numpy as np
-from clustering_functions import dbscan, approx_equal, fill_pore_type_matrix
+import pandas as pd
+from clustering_functions import dbscan, update_pore_type_matrix
+import plotly.express as px
 from periodic_distance import distance_matrix_periodic as cython_periodic
 import sys
 sys.path.append('/home/shivam/Mypymodules')
-from shivmod import PrinttoFile
 
 element_list = ['Ac', 'Ag', 'Am', 'As', 'At', 'Au', 'B', 'Ba', 'Be', 'X']*10
 def cluster_bin(x, y, z, bin_index_of_points, boi):
@@ -68,12 +68,25 @@ def cluster_bin(x, y, z, bin_index_of_points, boi):
             config.all_cluster_diameter_list.append(cluster_diameter_list)
             config.all_cluster_pore_type_labels.append(Ncluster * [config.pore_type_count])
 
+
+    # plot x, y, z coordinates in 3d
+    d = {'x': xk, 'y': yk, 'z': zk, 'color': cluster_labels}
+    df = pd.DataFrame(data=d)
+    df["color"] = df["color"].astype(str)
+    fig = px.scatter_3d(df, x='x', y='y', z='z', color="color")
+    fig.update_traces(marker=dict(size=4,
+                                  line=dict(width=0.8,
+                                            color='Black')),
+                      selector=dict(mode='markers'))
+
+    fig.write_html("geometric_points_with_cluster_labels_for_pore_type_%d.html" %config.pore_type_count)
+    fig.show()
+
     # What about the points that were classified as noise by DBSCAN?
     # We are just ignoring them for the time being
 
     # Add the points to the grid which are not classified as noise
     # And update the pore type matrix
-
     xgrid, ygrid, zgrid = [], [], []
     pore_type_labels = []
     for i, li in enumerate(cluster_labels):
@@ -83,7 +96,7 @@ def cluster_bin(x, y, z, bin_index_of_points, boi):
             ygrid.append(yk[i])
             zgrid.append(zk[i])
 
-    fill_pore_type_matrix(xgrid, ygrid, zgrid, pore_type_labels)
+    update_pore_type_matrix(xgrid, ygrid, zgrid, pore_type_labels)
     save_as_xyz(boi, xk, yk, zk, cluster_labels)
 
     return 1

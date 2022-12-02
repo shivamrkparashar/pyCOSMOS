@@ -127,6 +127,25 @@ def distance(v1, v2):
     
     return sqrt(squared_distance)
 
+def update_pore_type_matrix(x_arr, y_arr, z_arr, pore_type_labels):
+    """
+    pore_type_label = can be range(Npores) = 0 or 1
+    Assigns the pore_type_labels array into a 3d matrix grid
+
+    :param x_arr:
+    :param y_arr:
+    :param z_arr:
+    :param pore_type_labels:
+    :return:
+    """
+    for i, li in enumerate(pore_type_labels):
+        #for _ in np.unique(pore_type_labels):
+        xi, yi, zi = int(floor(x_arr[i])), int(floor(y_arr[i])), int(floor(z_arr[i]))
+        config.pore_type_matrix[xi, yi, zi] = li
+        # updating the pore type matrix according to the bins first
+        # So that the grid points corresponging to the particles belonging in these bins
+        # are not decideded based on the distance from the cluster surfaces
+        config.pore_type_matrix_2[xi, yi, zi] = li
 
 def fill_pore_type_matrix():
     """
@@ -177,6 +196,8 @@ def fill_pore_type_matrix():
                 config.pore_type_matrix_3[i][j][k] = index_min
 
 
+
+
 def show_pore_type_matrix():
     """
     plot x, y, z coordinates in 3d
@@ -211,6 +232,7 @@ def show_pore_type_matrix():
                       selector=dict(mode='markers'),
                       marker_symbol = 'square')
 
+    fig.write_html("pore_type_matrix_with_pore_type_labels.html")
     fig.show()
 
     d = {'x':xx, 'y':yy, 'z':zz, 'color':cluster_center_label_1d}
@@ -225,6 +247,7 @@ def show_pore_type_matrix():
                       selector=dict(mode='markers'),
                       marker_symbol = 'square')
 
+    fig.write_html("pore_type_matrix_with_cluster_center_labels.html")
     fig.show()
 def dbscan(x_arr, y_arr, z_arr,periodic_distance_matrix, eps, min_samples):
     """
@@ -235,23 +258,9 @@ def dbscan(x_arr, y_arr, z_arr,periodic_distance_matrix, eps, min_samples):
 
     fraction_of_noisy_points = np.count_nonzero(labels == -1)/len(labels)
 
-    # Number of clusters
-    #Ncluster = max(np.unique(labels)) + 1
-    
     # calculate cluster centers
     cluster_center_list, cluster_diameter_list = best_cluster_center(x_arr, y_arr, z_arr, labels)
 
-    # plot x, y, z coordinates in 3d
-    if fraction_of_noisy_points < 0.5:
-        d = {'x':x_arr, 'y':y_arr, 'z':z_arr, 'color':labels}
-        df = pd.DataFrame(data = d)
-        df["color"] = df["color"].astype(str)
-        fig = px.scatter_3d(df, x = 'x', y = 'y', z='z', color = "color")
-        fig.update_traces(marker=dict(size=4,
-                             line=dict(width=0.8,
-                             color='Black')),
-                  selector=dict(mode='markers'))
-        fig.show()
     return labels, cluster_center_list, cluster_diameter_list, fraction_of_noisy_points
 
 def best_cluster_center(x_arr, y_arr, z_arr, labels):
@@ -359,14 +368,6 @@ def best_cluster_center(x_arr, y_arr, z_arr, labels):
             if lj == li: # only those points that belong to the cluster
                 radius = distance(cluster_center, np.array([x, y, z]))
                 radius_list.append(radius)
-        """        
-        figure()
-        hist(radius_list, density =True, color ='magenta', edgecolor='black')
-        title('Pore type = %d, Cluster number = %d' %(config.pore_type_count+1, li+1))
-        xlabel('Distance from cluster center ($\AA$)')
-        ylabel('Normalized distribution')
-        show()
-        """
 
     return(cluster_center_list, cluster_diameter_list)
 
