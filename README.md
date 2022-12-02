@@ -1,4 +1,4 @@
-# Automatic compartmentalization
+# pyCOSMOS: python for Compartmentalization Of Solid Metal-Organic framework Structures
 This algorithm divides the unit cell of a MOF into pore compartments
 
 
@@ -14,7 +14,7 @@ To build the cython file:
 
 ## Inputs
 1. *vpspts file from Zeo++ pore size distribution calculation
-2. Number of pore types
+2. Number of pore types. (If you don't know this, run this code with guess value of 1, 2, and 3 in this order)
 
 ## Outputs
 1. pore_type_matrix_with_cluster_labels.csv
