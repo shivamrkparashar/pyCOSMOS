@@ -10,16 +10,25 @@ sys.path.append('/home/shivam/Mypymodules')
 element_list = ['Ac', 'Ag', 'Am', 'As', 'At', 'Au', 'B', 'Ba', 'Be', 'X']*10
 def cluster_bin(x, y, z, bin_index_of_points, boi):
     """
+    For a given bin boi,
+    1. Extracts all points within the bin and store in xk, yk, zk
+    2. Use DBSCAN to cluster these points and calculate number of clusters, cluster centers, and size
+    3. Displays all clusters of points in html file on browser
+    4. Update the pore type matrix with the new pore type label
 
-    :param x:
-    :param y:
-    :param z:
-    :param bin_index_of_points:
-    :param boi:
-    :param compute_pbc_matrix:
-    :return:
+    :param x: numpy array, len = No. of geometric points
+    :param y: numpy array, len = No. of geometric points
+    :param z: numpy array, len = No. of geometric points
+    :param bin_index_of_points: numpy array of len = No. of geometric points
+    Tells in which bin does each of the point goes
+    :param boi: bin number (0, 1, ...20)
+
+    :returns:
+     0 if the bin boi is a secondary bin
+     1 if the bin boi is a primary bin
+
     """
-    print('Currently at nbin = %d' % boi)
+    print('\n Currently at nbin = %d' % boi)
 
     # xk, yk, zk are the points belonging to the bin boi
     xk, yk, zk, diak = [], [], [], []
@@ -31,43 +40,44 @@ def cluster_bin(x, y, z, bin_index_of_points, boi):
             zk.append(z[i])
             #diak.append(diameter[i])
 
+    # If a bin contains no points
+    if len(xk) == 0:
+        print("%d does not contain any points" %boi)
+        return 0
+
     # Store distances between every point and every other points within a bin in pbc_matrix variable
     # Minimum image convention is used
     xk, yk, zk = np.array(xk), np.array(yk), np.array(zk)
     pbc_matrix = cython_periodic(xk, yk, zk)
 
     # Using DBSCAN to cluster points
+    # If the value of epsilon chosen is too small then a higher number of clusters will be created,
+    # and more data points will be taken as noise.
+    #
+    # min_samples: The number of samples (or total weight) in a neighborhood for a point to be considered as a core point.
+    # This includes the point itself.
     cluster_labels, cluster_center_list, cluster_diameter_list, fraction_of_noisy_points = \
-        dbscan(xk, yk, zk, pbc_matrix, eps=3.0, min_samples=10)
+        dbscan(xk, yk, zk, pbc_matrix, eps=2, min_samples=40)
 
     # Number of clusters and their centers
     #Ncluster = max(np.unique(cluster_labels)) + 1
     Ncluster = max(cluster_labels) + 1
     print('Number of clusters identified = %d ' % Ncluster)
 
-    # append the centers of the clusters to the global list
-    if not config.all_cluster_center_list:  # if all_cluster_center_list is empty
-        print("First pore type identified")
+
+    if fraction_of_noisy_points > 0.5:
+        # This bin cannot be regarded as a new pore type
+        # print('bin contains noisy points')
+        # print('Starting with another bin')
+        print('nbin = %d is a Secondary bin because of too many noisy points' % boi)
+        return 0
+    else:
+        # New pore type found
         config.pore_type_count += 1
+        print('New pore type identified, pore type count = ', config.pore_type_count)
         config.all_cluster_center_list.append(cluster_center_list)
         config.all_cluster_diameter_list.append(cluster_diameter_list)
-        config.all_cluster_pore_type_labels.append(Ncluster * [config.pore_type_count])  # pore type labels of this bin
-
-    else: # For 2nd or 3rd pore type
-        # The points within a bin will be a new pore type if the
-        if fraction_of_noisy_points > 0.5:
-            # This bin cannot be regarded as a new pore type
-            print('bin contains noisy points')
-            print('Starting with another bin')
-            return 0
-        else:
-            # New pore type found
-            config.pore_type_count += 1
-            print('New pore type identified, pore type count = ', config.pore_type_count)
-            config.all_cluster_center_list.append(cluster_center_list)
-            config.all_cluster_diameter_list.append(cluster_diameter_list)
-            config.all_cluster_pore_type_labels.append(Ncluster * [config.pore_type_count])
-
+        config.all_cluster_pore_type_labels.append(Ncluster * [config.pore_type_count])
 
     # plot x, y, z coordinates in 3d
     d = {'x': xk, 'y': yk, 'z': zk, 'color': cluster_labels}
@@ -99,6 +109,7 @@ def cluster_bin(x, y, z, bin_index_of_points, boi):
     update_pore_type_matrix(xgrid, ygrid, zgrid, pore_type_labels)
     save_as_xyz(boi, xk, yk, zk, cluster_labels)
 
+    print('nbin = %d is a Primary bin' % boi)
     return 1
 
 
