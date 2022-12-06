@@ -25,4 +25,4 @@ all_cluster_pore_type_labels = [] # [[0, 0,], [1, 1, 1, 1] ]
 all_cluster_diameter_list = []
 x, y, z, diameter = [], [], [], []
 bin_index_of_points = []
-pore_type_count = -1
+pore_type_count = 0
