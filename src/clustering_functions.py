@@ -27,6 +27,7 @@ def plot_histogram(arr, nbins):
     ylabel('Normalized Distribution')
     xlim(0,)
     ylim(0,)
+    close()
     savefig('PSD.jpg', format='jpg',dpi=300 ,bbox_inches='tight')
 
 def read_vpsdpts(INPUT):
@@ -80,7 +81,7 @@ def make_histogram(diameter_arr, nbins):
     ------------------------
     bin_freq: numpy array
     bin_edges: numpy array
-    bin_index: numpy array
+    bin_index: numpy array of len = Number of geometric points
         Tells in which bin does each of the point goes
     """
     # The min and max (range) of the histogram are the nearest integers given by floor or ceil
@@ -278,9 +279,11 @@ def best_cluster_center(x_arr, y_arr, z_arr, labels):
     Ncluster = max(np.unique(labels))+1
     #print('Number of clusters = ', Ncluster)
 
-    if Ncluster ==0:
-        print('All data points classified as noise')
-        return
+    if Ncluster ==0: # if only one cluster
+        if labels[0] == -1:
+            print('All data points classified as noise')
+            # return empty list
+            return (cluster_center_list, cluster_diameter_list)
 
     # Initialize the center of each cluster
     # x_center = [x_cluster_0, x_cluster_1 ....]
