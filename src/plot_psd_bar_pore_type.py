@@ -20,12 +20,17 @@ pore_type_histogram = np.array([[0.0000e+00, 0.0000e+00, 0.0000e+00, 0.0000e+00,
 
 def plot_psd_bar_pore_type(bin_centers, pore_type_histogram):
 
-    if config.pore_type_count == 2:
+    if config.pore_type_count == 1:
+       d = {'bin_centers': bin_centers, 'pore_type_hist_1': pore_type_histogram[0]}
+
+    elif config.pore_type_count == 2:
         d = {'bin_centers': bin_centers, 'pore_type_hist_1': pore_type_histogram[0],
          'pore_type_hist_2':pore_type_histogram[1]}
+
     elif config.pore_type_count == 3:
         d = {'bin_centers': bin_centers, 'pore_type_hist_1': pore_type_histogram[0],
              'pore_type_hist_2':pore_type_histogram[1], 'pore_type_hist_3': pore_type_histogram[2]}
+
     df = pd.DataFrame(data =d)
     df.to_csv('pore_type_histogram.dat', index = False)
 
@@ -33,11 +38,7 @@ def plot_psd_bar_pore_type(bin_centers, pore_type_histogram):
     norm = np.sum(pore_type_histogram)*width_bar # calculates sum over all element across dimensions
     pore_type_histogram /= norm
 
-    #colors = ['teal', 'gold', 'skyblue']
-    #colors = ['green', 'yellow', 'skyblue'] # PCN-224
-    #colors = ['yellow', 'green', 'orange'] # ZIF-412
-    #colors = ['magenta',  'green', 'orange' ] # Cu-BTC
-    colors = ['orange', 'green', 'skyblue'] # UiO-66
+    colors = ['orange', 'green', 'skyblue'] #
 
     figure()
     for i in range(config.pore_type_count):

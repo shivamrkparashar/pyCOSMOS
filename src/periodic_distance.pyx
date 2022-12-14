@@ -1,25 +1,16 @@
-#from math import sqrt
-
 cimport cython
 import numpy as np
 from cython.parallel import prange
-from libc.math cimport sqrt, fabs
-from config import Box
-#Box = 25.832
-#Lx = Box
-#Ly = Box
-#Lz = Box
+from libc.math cimport sqrt, fabs, cos
+import config
 
-#cdef double Box = 25.832
-cdef double Lx = Box
-cdef double Ly = Box
-cdef double Lz = Box
+cdef double Lx = config.Lx
+cdef double Ly = config.Ly
+cdef double Lz = config.Lz
+cdef double alpha = config.alpha
+cdef double beta = config.beta
+cdef double gamma = config.gamma
 
-#import multiprocessing
-
-
-#cdef distance(double[:] v1, double[:] v2) nogil:
-#def distance(double[:] v1, double[:] v2):
 @cython.boundscheck(False)  # deactivate bounds checking
 @cython.wraparound(False)   # deactivate negative indexing.
 cdef double distance(double[:] v1, double[:] v2) nogil:
@@ -53,46 +44,26 @@ cdef double distance(double[:] v1, double[:] v2) nogil:
     if fabs(dz) > Lz/2:
         dz = Lz - fabs(dz)        
     
-    squared_distance = dx*dx + dy*dy + dz*dz
+    #squared_distance = dx*dx + dy*dy + dz*dz
+
+    squared_distance = dx*dx + dy*dy + dz*dz + 2*dx*dy*cos(gamma) \
+                       + 2*dy*dz*cos(alpha) + 2*dz*dx*cos(beta)
+
     dist = sqrt(squared_distance)
 
     return dist
 
 @cython.boundscheck(False)  # deactivate bounds checking
 @cython.wraparound(False)   # deactivate negative indexing.
-#def distance_matrix_periodic(x_arr, y_arr, z_arr):
 def distance_matrix_periodic(double [:]x_arr, double [:] y_arr, double [:] z_arr):
     
-    #print(len(x_arr))
-    # print('3')
     cdef int Npoints = len(x_arr)
-    #cdef int Npoints = x_arr.shape[0]
 
     periodic_distance_matrix = np.zeros((Npoints, Npoints))
     cdef double [:, :] periodic_distance_matrix_view = periodic_distance_matrix
 
 
     # Parallizing the computation using multiprocessing ironically slows down the speed
-    """
-    for i in range(Npoints):
-        vi = np.array([x_arr[i], y_arr[i], z_arr[i]])
-        vj_list = [np.array([x_arr[j], y_arr[j], z_arr[j]]) for j in range(Npoints) if i >= j]
-
-        vi_list = [vi]* len(vj_list)
-
-
-        a_pool = multiprocessing.Pool()
-        input_vector_list = zip(vi_list, vj_list)
-        #input_vector_list = [ (vi, np.array([x_arr[j], y_arr[j], z_arr[j]])) for j in range(Npoints) if i >= j]
-        
-        results = a_pool.map(distance, input_vector_list)
-
-        for j in range(Npoints):
-            if i >= j:
-                periodic_distance_matrix[i][j] = results[j]
-        
-        a_pool.close()
-    """
     cdef Py_ssize_t i, j
     cdef double [:] vi = np.zeros(3)
     cdef double [:] vj = np.zeros(3)
