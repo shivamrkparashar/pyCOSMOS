@@ -1,0 +1,3 @@
+
+python ../../src/main.py indexed_1_cubic_Transform.vpsdpts 72.205 3 pore_type_matrix.csv | tee summary.txt
+

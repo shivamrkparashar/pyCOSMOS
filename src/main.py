@@ -9,7 +9,8 @@ from plot_psd_bar_pore_type import plot_psd_bar_pore_type
 
 if __name__ == "__main__":
     # x, y, z are the geometric points and diameter is their  geometric diameters
-    x, y, z, geom_dia = read_vpsdpts(config.INPUT)
+    a, b, c, geom_dia = read_vpsdpts(config.INPUT)
+
     # number of bins = max diameter in psd
     # Each bin will be 1 A wide
     nbins = int(ceil(geom_dia.max())- floor(geom_dia.min()))
@@ -25,9 +26,47 @@ if __name__ == "__main__":
     bin_analyzed = []
 
     # Identify and analyze primary bins
-    for b, boi in enumerate(bin_order):
-        new_pore_type_found = cluster_bin(x, y, z, geom_dia, bin_index_of_points, boi)
+    for boi in bin_order:
 
+        # If the number of pore types identified = NumberOfPoreTypes, break the loop
+        if config.pore_type_count == config.NumberOfPoreTypes:
+            break
+
+        # 1. Extract the points within bin boi
+        ak, bk, ck, diak = extract_points_in_a_bin(a, b, c, geom_dia, bin_index_of_points, boi)
+
+        # 2. Cluster the points within bin boi
+        Ncluster, Npoints_per_cluster, cluster_labels, cluster_center_list, cluster_diameter_list, fraction_of_noisy_points =\
+        cluster_points_within_a_bin(ak, bk, ck)
+
+        # 3, Classify the points as primary or secondary
+        #primary_bin = 1
+        primary_bin = classify_bin(diak, Npoints_per_cluster, fraction_of_noisy_points, boi)
+
+        if primary_bin:
+
+            config.pore_type_count += primary_bin
+            print('New pore type identified, pore type count = ', config.pore_type_count)
+            config.all_cluster_center_list.append(cluster_center_list)
+            config.all_cluster_diameter_list.append(cluster_diameter_list)
+            config.all_cluster_pore_type_labels.append(Ncluster * [config.pore_type_count])
+
+            # update the pore type matrix
+            update_pore_type_matrix(ak, bk, ck, cluster_labels)
+
+            # x, y, z coordinates in 3d
+            xk, yk, zk = abc_to_xyz(ak, bk, ck)
+            # save xyz file
+            save_as_xyz(boi, xk, yk, zk, cluster_labels)
+            # plot x, y, z coordinates
+            plot_xyz(xk, yk, zk, cluster_labels)
+        else:
+            print('%d is a secondary bin' %boi)
+
+        # new_pore_type_found = cluster_bin(a, b, c, geom_dia, bin_index_of_points, boi)
+
+
+        # Comment below is not true
         # if a secondary bin is found, it is more likely that other bins smaller than it
         # will also be secondary
         #if not new_pore_type_found:
@@ -36,6 +75,7 @@ if __name__ == "__main__":
     print('--------------------------')
     print('All Primary bins identified')
     print('Number of pore types = %d' %config.pore_type_count)
+
     if config.pore_type_count == 0:
         print('Exiting, change epsilon and minpts params of dbscan')
         exit(1)
@@ -51,7 +91,7 @@ if __name__ == "__main__":
 
     pore_type_histogram = np.zeros((config.pore_type_count, nbins))
 
-    for xi, yi, zi, di in zip(x, y, z, geom_dia):
+    for xi, yi, zi, di in zip(a, b, c, geom_dia):
 
         # which bin does each xyz point belong to
         bin_index = np.digitize(di, bin_edges)- 1

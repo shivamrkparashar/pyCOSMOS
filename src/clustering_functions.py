@@ -170,7 +170,7 @@ def distance(v1, v2):
     
     return sqrt(squared_distance)
 
-def update_pore_type_matrix(x_arr, y_arr, z_arr, pore_type_labels):
+def update_pore_type_matrix(xk, yk, zk, cluster_labels):
     """
     pore_type_label = can be range(Npores) = 0 or 1
     Assigns the pore_type_labels array into a 3d matrix grid
@@ -181,12 +181,17 @@ def update_pore_type_matrix(x_arr, y_arr, z_arr, pore_type_labels):
     :param pore_type_labels:
     :return:
     """
+    xgrid, ygrid, zgrid = [], [], []
+    pore_type_labels = []
+    for i, li in enumerate(cluster_labels):
+        if li != -1:  # if not noise
+            pore_type_labels.append(config.pore_type_count)
+            xgrid.append(xk[i])
+            ygrid.append(yk[i])
+            zgrid.append(zk[i])
+
     for i, li in enumerate(pore_type_labels):
-        #for _ in np.unique(pore_type_labels):
-        xi, yi, zi = int(floor(x_arr[i])), int(floor(y_arr[i])), int(floor(z_arr[i]))
-        # updating the pore type matrix according to the bins first
-        # So that the grid points corresponging to the particles belonging in these bins
-        # are not decideded based on the distance from the cluster surfaces
+        xi, yi, zi = int(floor(xgrid[i])), int(floor(ygrid[i])), int(floor(zgrid[i]))
         config.pore_type_matrix_with_pore_type_labels[xi, yi, zi] = li
 
 def fill_pore_type_matrix():
@@ -400,14 +405,18 @@ def best_cluster_center(x_arr, y_arr, z_arr, labels):
                         # new center should be inside the unit cell
                         xx, yy, zz = put_point_in_box(xx, yy, zz)
                         # cluster_diameter based on radius of gyration
-                        cluster_diameter = 2*sqrt(sum_distance_from_center_list[index]/np.count_nonzero(labels==li))
+                        radius_of_gyration = sqrt(sum_distance_from_center_list[index]/np.count_nonzero(labels==li))
+                        max_cluster_size = 2*(3./4/np.pi* np.count_nonzero(labels==li)/config.rho)**(1/3.)
+
+                        #cluster_diameter = 2*radius_of_gyration
+                        cluster_diameter = max_cluster_size
 
                         cluster_center_list.append(np.array([xx, yy, zz]))
                         cluster_diameter_list.append(cluster_diameter)
                         #print('Original center = %1.3g, %1.3g, %1.3g' %(x_center[li], y_center[li], z_center[li]))
                         print('-----------Cluster # %d ---------------' %li)
-                        print('Center  = %1.3g, %1.3g, %1.3g' %(xx, yy, zz))
-                        print('Average size = %1.3g A' %cluster_diameter)
+                        print('Center (a, b, c) = %1.3g, %1.3g, %1.3g' %(xx, yy, zz))
+                        print('2Rg = %1.3g A, Cluster size = %1.3g' %(2*radius_of_gyration, max_cluster_size))
                         print('---------------------------------------')
 
                     index += 1

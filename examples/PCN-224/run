@@ -1,0 +1,3 @@
+
+python ../../src/main.py PCN-224-Nometal.vpsdpts 38.512 | tee summary.txt
+

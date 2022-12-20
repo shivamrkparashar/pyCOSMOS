@@ -3,7 +3,7 @@ This algorithm divides the unit cell of a MOF into pore compartments
 
 
 ## How to use?
-To build the cython file:
+Build the cython file:  
 `python3 setup_periodic_distance.py build_ext --inplace`
 
 

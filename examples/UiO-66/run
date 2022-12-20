@@ -1,0 +1,3 @@
+
+python ../../src/main.py UiO-66F.vpsdpts 20.8663 | tee summary.txt
+

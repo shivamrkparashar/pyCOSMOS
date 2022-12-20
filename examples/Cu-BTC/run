@@ -1,0 +1,4 @@
+
+#python ../../src/main.py Dehy-Cu-BTC.vpsdpts 26.343 | tee summary.txt
+python ../../src/main.py Dehy-Cu-BTC.vpsdpts 26.343 26.343 26.343 90 90 90 | tee summary.txt
+
