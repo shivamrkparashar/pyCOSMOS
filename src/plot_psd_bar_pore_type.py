@@ -31,6 +31,11 @@ def plot_psd_bar_pore_type(bin_centers, pore_type_histogram):
         d = {'bin_centers': bin_centers, 'pore_type_hist_1': pore_type_histogram[0],
              'pore_type_hist_2':pore_type_histogram[1], 'pore_type_hist_3': pore_type_histogram[2]}
 
+    elif config.pore_type_count == 4:
+        d = {'bin_centers': bin_centers, 'pore_type_hist_1': pore_type_histogram[0],
+             'pore_type_hist_2':pore_type_histogram[1], 'pore_type_hist_3': pore_type_histogram[2],
+             'pore_type_hist_4': pore_type_histogram[3]}
+
     df = pd.DataFrame(data =d)
     df.to_csv('pore_type_histogram.dat', index = False)
 
@@ -38,7 +43,7 @@ def plot_psd_bar_pore_type(bin_centers, pore_type_histogram):
     norm = np.sum(pore_type_histogram)*width_bar # calculates sum over all element across dimensions
     pore_type_histogram /= norm
 
-    colors = ['orange', 'green', 'skyblue'] #
+    colors = ['red', 'green', 'blue', 'yellow'] #
 
     figure()
     for i in range(config.pore_type_count):
@@ -53,6 +58,10 @@ def plot_psd_bar_pore_type(bin_centers, pore_type_histogram):
             bar(bin_centers, pore_type_histogram[i], width = width_bar,
                 bottom= pore_type_histogram[0] + pore_type_histogram[1],
                 label = 'pore %d' %(i+1), color = colors[i], edgecolor = 'black')
+        if i == 3:
+            bar(bin_centers, pore_type_histogram[i], width=width_bar,
+                bottom=pore_type_histogram[0] + pore_type_histogram[1] + pore_type_histogram[2],
+                label='pore %d' % (i + 1), color=colors[i], edgecolor='black')
 
     legend(loc = 'best')
     xlabel('Diameter $(\AA)$')

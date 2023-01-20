@@ -42,7 +42,7 @@ if __name__ == "__main__":
         = cluster_points_within_a_bin(ak, bk, ck, bin_number)
 
         # 3. Calculate the shape, size, and orientation of the cluster
-        cluster_shape_list, cluster_size_list, cluster_orientation_list = \
+        cluster_shape_list, cluster_size_list, cluster_length_list, cluster_orientation_list = \
             calculate_shape_and_size_of_cluster_within_bin(cluster_labels, \
                 bin_number, ak, bk, ck, cluster_center_list)
 
@@ -52,11 +52,12 @@ if __name__ == "__main__":
         primary_bin = classify_bin(cluster_shape_list, diak, cluster_labels, bin_number)
 
         if primary_bin:
-            Ncluster = (cluster_labels) + 1
+            Ncluster = max(cluster_labels) + 1
             config.pore_type_count += primary_bin
             print('New pore type identified, pore type count = ', config.pore_type_count)
             config.all_cluster_center_list.append(cluster_center_list)
             config.all_cluster_diameter_list.append(cluster_size_list)
+            config.all_cluster_length_list.append(cluster_length_list)
             config.all_cluster_shape_list.append(cluster_shape_list)
             config.all_cluster_orientation_list.append(cluster_orientation_list)
             config.all_cluster_pore_type_labels.append(Ncluster * [config.pore_type_count])

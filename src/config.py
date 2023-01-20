@@ -53,11 +53,13 @@ print("Unit cell: %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f" %(Lx, Ly, Lz, alpha_degre
 print("Number of Pore types: ", NumberOfPoreTypes)
 print("Volume of uc [A^3]: %1.3f "%Volume_of_uc)
 
-pore_type_matrix_with_pore_type_labels = -1 * np.ones((int(ceil(Lx)), int(ceil(Ly)), int(ceil(Lz)))) # 3D pore type matrix
-pore_type_matrix_with_cluster_labels = -1 * np.ones((int(ceil(Lx)), int(ceil(Ly)), int(ceil(Lz)))) # 3D pore type matrix
+# -2 represents empty, -1 represtnts noise as classified by dbscan
+pore_type_matrix_with_pore_type_labels = -2 * np.ones((int(ceil(Lx)), int(ceil(Ly)), int(ceil(Lz)))) # 3D pore type matrix
+pore_type_matrix_with_cluster_labels = -2 * np.ones((int(ceil(Lx)), int(ceil(Ly)), int(ceil(Lz)))) # 3D pore type matrix
 all_cluster_center_list = []  # [ [c1, c2], [c3, c4, c5, c6] ......... ] where ci = np.array([xi, yi, zi])
 all_cluster_pore_type_labels = [] # [[0, 0,], [1, 1, 1, 1] ]
 all_cluster_diameter_list = []
+all_cluster_length_list = []
 all_cluster_shape_list = []
 all_cluster_orientation_list = []
 bin_index_of_points = []

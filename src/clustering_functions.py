@@ -210,6 +210,7 @@ def fill_pore_type_matrix():
     all_cluster_pore_type_labels_flatten = [j for sub in config.all_cluster_pore_type_labels for j in sub]
     all_cluster_center_list_flatten = [j for sub in config.all_cluster_center_list for j in sub]
     all_cluster_diameter_list_flatten = [j for sub in config.all_cluster_diameter_list for j in sub]
+    all_cluster_length_list_flatten = [j for sub in config.all_cluster_length_list for j in sub]
     all_cluster_shape_list_flatten = [j for sub in config.all_cluster_shape_list for j in sub]
     all_cluster_orientation_list_flatten = [j for sub in config.all_cluster_orientation_list for j in sub]
 
@@ -217,12 +218,26 @@ def fill_pore_type_matrix():
     with open('pore_centers.txt', 'w') as out:
         out.write('Box %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f \n' %(config.Lx, config.Ly, config.Lz, config.alpha_degree
                 ,config.beta_degree, config.gamma_degree))
-        out.write("xc \t yc \t zc \t diameter \t pore_type \n" )
+        #out.write("sphere \t xc \t yc \t zc \t diameter \t pore_type \n" )
+        #out.write("channel \t xc \t yc \t zc \t diameter \t ox \t oy \t oz \t pore_type \n" )
+
         for i, center_cord in enumerate(all_cluster_center_list_flatten):
             ac, bc, cc = center_cord
             xc, yc, zc = abc_to_xyz(ac, bc, cc)
-            out.write("%1.3f %1.3f %1.3f %1.3f %d \n"%(xc, yc, zc, all_cluster_diameter_list_flatten[i],
+            if all_cluster_shape_list_flatten[i] == 'sphere':
+                out.write("sphere %1.3f %1.3f %1.3f %1.3f %d \n"%(xc, yc, zc, all_cluster_diameter_list_flatten[i],
                                                        all_cluster_pore_type_labels_flatten[i]))
+            if all_cluster_shape_list_flatten[i] == 'channel':
+                # v1 and v2 are vectors on the end of the cylinder
+                v1 = center_cord - all_cluster_orientation_list_flatten[i]*all_cluster_length_list_flatten[i]/2.
+                v2 = center_cord + all_cluster_orientation_list_flatten[i]*all_cluster_length_list_flatten[i]/2.
+
+                v1 = np.array(abc_to_xyz(v1[0], v1[1], v1[2]))
+                v2 = np.array(abc_to_xyz(v2[0], v2[1], v2[2]))
+
+                out.write("channel %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f %d \n"%(v1[0], v1[1], v1[2],\
+                    v2[0], v2[1], v2[2], all_cluster_diameter_list_flatten[i], all_cluster_pore_type_labels_flatten[i]))
+
 
 
     # 3d grid in the unit cell
@@ -234,13 +249,10 @@ def fill_pore_type_matrix():
         for j, bi in enumerate(b):
             for k, ci in enumerate(c):
 
-                # proceed only if the pore type matrix has -1
-                # This is done to make sure the grid points calculated using the largest and
-                # second largest bins, and third largest bins do not get overwritten
-                #if config.pore_type_matrix_with_pore_type_labels[i, j, k] != -1: continue
 
 
                 # calculate distance of the point to each of the cluster surface
+                # This include all clusters that belong to different pore types
                 distance_from_cluster_surface = []
                 for cc, cluster_center in enumerate(all_cluster_center_list_flatten):
                     # distance from cluster surface.
@@ -253,22 +265,33 @@ def fill_pore_type_matrix():
                     if all_cluster_shape_list_flatten[cc] == 'channel':
                         # THis distance is not periodic
                         # Find the point on the line which is perpendicular to the grid point
+                        # vector connecting the grid point to the cluster center
                         vec = np.array([ai, bi, ci])-cluster_center
-                        vec_xyz = abc_to_xyz(vec[0], vec[1], vec[2])
+                        vec_xyz = np.array(abc_to_xyz(vec[0], vec[1], vec[2]))
 
+                        # vector along the orientation of the channel shaped cluster
                         ox, oy, oz = all_cluster_orientation_list_flatten[cc]
-                        orient_xyz = abc_to_xyz(ox, oy, oz)
-                        dist = np.linalg.norm(np.cross(np.array(vec_xyz), np.array(orient_xyz)))
+                        orient_xyz = np.array(abc_to_xyz(ox, oy, oz))
+
+                        alpha = np.dot(vec_xyz, orient_xyz)/np.linalg.norm(orient_xyz)**2
+                        # d vector is the point on the line which is closest to the grid point (ai, bi, ci)
+                        d = alpha*orient_xyz + cluster_center
+
+                        dist = periodic_distance(np.array([ai, bi, ci]), d)
+                        #dist = np.linalg.norm(np.cross(np.array(vec_xyz), np.array(orient_xyz)))
                         distance_from_cluster_surface.append(dist - 0.5 * all_cluster_diameter_list_flatten[cc])
 
-                    #distance_from_cluster_surface.append(distance(np.array([ai, bi, ci]), cluster_center))
                 # index of the distance_from_cluster_center list where the distance is minimum
                 distance_from_cluster_surface = np.array(distance_from_cluster_surface)
                 index_min = np.argmin(distance_from_cluster_surface)
 
-                config.pore_type_matrix_with_pore_type_labels[i][j][k] = all_cluster_pore_type_labels_flatten[index_min]
                 config.pore_type_matrix_with_cluster_labels[i][j][k] = index_min
 
+                # proceed only if the pore type matrix has -1
+                # This is done to make sure the grid points calculated using the largest and
+                # second largest bins, and third largest bins do not get overwritten
+                if config.pore_type_matrix_with_pore_type_labels[i, j, k] == -2: # only if the grid points are unassigned
+                    config.pore_type_matrix_with_pore_type_labels[i][j][k] = all_cluster_pore_type_labels_flatten[index_min]
 
 
 

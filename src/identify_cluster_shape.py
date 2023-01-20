@@ -35,41 +35,53 @@ def classify_cluster_shape(bin_number, cluster_number, ac, bc, cc, center):
     :param center:
     :return:
     """
+    points_xyz = []
+    for ai, bi, ci in zip(ac, bc, cc):
+        points_xyz.append(abc_to_xyz(ai, bi, ci))
+    points_xyz = np.array(points_xyz)
+    save_cluster_as_xyz(bin_number, cluster_number, points_xyz[:, 0], points_xyz[:, 1], points_xyz[:, 2] )
 
     shape = 'sphere'
     ac, bc, cc = centralize_cluster(ac, bc, cc, center)
-
+    orientation = np.array([0, 0, 0])
     if np.isclose(np.amin(ac), 0, atol = 1) and np.isclose(np.amax(ac), config.Lx, atol = 1):
         shape = 'channel'
+        orientation += np.array([1, 0, 0])
 
     if np.isclose(np.amin(bc), 0, atol = 1) and np.isclose(np.amax(bc), config.Ly, atol = 1):
         shape = 'channel'
+        orientation += np.array([0, 1, 0])
 
     if np.isclose(np.amin(cc), 0, atol = 1) and np.isclose(np.amax(cc), config.Lz, atol = 1):
         shape = 'channel'
+        orientation += np.array([0, 0, 1])
 
+    #orientation = np.array(orientation)
+    if not np.isclose(np.linalg.norm(orientation), 0, atol = 1e-4):
+        orientation = orientation/np.linalg.norm(orientation)
 
     Npoints = len(ac)
     print('--------------- Cluster # %d ---------------' %cluster_number)
     print('Center (a, b, c) = %1.3g, %1.3g, %1.3g' %(center[0], center[1], center[2]))
     print('shape = %s' % shape)
+    length = 0
     if shape == 'sphere':
         # based on the number of points within a cluster
-        orientation = np.array([0, 0, 0])
+        #orientation = np.array([0, 0, 0])
         size = 2 * (3.* Npoints/(4* np.pi * config.rho)) ** (1 / 3.) # diameter
         print('Diameter = %1.2f \n' %size)
 
     elif shape == 'channel':
-        orientation = calculate_orientation_of_channel(ac, bc, cc)
+        #orientation = calculate_orientation_of_channel(ac, bc, cc)
         da, db, dc = np.multiply(orientation, np.array([config.Lx, config.Ly, config.Lz]))
         length = np.sqrt(da**2 + db**2 + dc**2 + 2*da*db*np.cos(config.gamma)\
                        + 2*db*dc*np.cos(config.alpha) + 2*dc*da*np.cos(config.beta))
         size = (4*Npoints/(np.pi*length*config.rho)) ** (1/2.) # diameter
 
-        print('Orientation (a, b, c) = ', orientation)
+        print('Orientation (a, b, c) = ', np.round(orientation,2))
         print('Length = %1.2f, Diameter = %1.2f \n' %(length, size))
 
-    return shape, size, orientation
+    return shape, size, length, orientation
 
 def calculate_orientation_of_channel(ac, bc, cc):
 

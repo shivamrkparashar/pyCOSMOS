@@ -104,17 +104,19 @@ def calculate_shape_and_size_of_cluster_within_bin(cluster_labels, bin_number, a
     # Determine the shape of each cluster
     cluster_size_list = []
     cluster_shape_list = []
+    cluster_length_list = []
     cluster_orientation_list = []
 
     for cluster_number in range(Ncluster):
         mask = cluster_labels == cluster_number
-        shape, size, orientation = classify_cluster_shape(bin_number, cluster_number, ak[mask], bk[mask], ck[mask], cluster_center_list[cluster_number])
+        shape, size, length, orientation = classify_cluster_shape(bin_number, cluster_number, ak[mask], bk[mask], ck[mask], cluster_center_list[cluster_number])
 
         cluster_shape_list.append(shape)
         cluster_size_list.append(size)
+        cluster_length_list.append(length)
         cluster_orientation_list.append(orientation)
 
-    return cluster_shape_list, cluster_size_list, cluster_orientation_list
+    return cluster_shape_list, cluster_size_list, cluster_length_list, cluster_orientation_list
 
 def classify_bin(cluster_shape_list, diak, cluster_labels, boi):
     """
@@ -143,7 +145,7 @@ def classify_bin(cluster_shape_list, diak, cluster_labels, boi):
 
 
     print("Number of points per cluster = %1.0f"  %Npoints_per_cluster)
-    if len(set(cluster_shape_list)) == 1 and cluster_shape_list[0]== 'sphere':
+    if cluster_shape_list[0]== 'sphere':
 
         Nc = 50000/config.Volume_of_uc *np.pi/6* np.average(diak) **3
         print("Points per cluster required for a spherical primary bin = %1.0f " %Nc)
@@ -152,15 +154,17 @@ def classify_bin(cluster_shape_list, diak, cluster_labels, boi):
             print('nbin = %d is a Secondary bin because of too many small noisy clusters' % boi)
             return 0
 
-        if Npoints_per_cluster > Nc:
-            # print('nbin = %d is a Secondary bin because of big noisy clusters' % boi)
-            print('Reduce the DBSCAN parameter epsilon' % boi)
-            return 0
-
         else:
             return 1
 
-    else:
+        """
+        if Npoints_per_cluster > Nc:
+            # print('nbin = %d is a Secondary bin because of big noisy clusters' % boi)
+            print('Reduce the DBSCAN parameter epsilon' % boi)
+            return 1
+        """
+
+    if cluster_shape_list[0]== 'channel':
         # New pore type found
         return 1
 
@@ -237,6 +241,22 @@ def plot_pore_centers_mayavi():
         z = np.cos(theta)
         return mlab.mesh(r * x + x0, r * y + y0, r * z + z0, color = color)
 
+    def plot_cylinder(x1, y1, z1, x2, y2, z2, r, color):
+        """
+
+        :param x1:
+        :param y1:
+        :param z1:
+        :param x2:
+        :param y2:
+        :param z2:
+        :param r:
+        :param color:
+        :return:
+        """
+        return mlab.plot3d([x1, x2], [y1, y2], [z1, z2], tube_radius=r, color = color)
+
+
 
     all_cluster_pore_type_labels_flatten = [j for sub in config.all_cluster_pore_type_labels for j in sub]
     all_cluster_center_list_flatten = [j for sub in config.all_cluster_center_list for j in sub]
@@ -251,6 +271,7 @@ def plot_pore_centers_mayavi():
     ac, bc, cc = np.array(ac), np.array(bc), np.array(cc)
     xc, yc, zc = abc_to_xyz(ac, bc, cc)
 
+    # red, blue, green, yellow
     sphere_color= [(1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 1, 0)]
 
     draw_unit_cell_mayavi()
