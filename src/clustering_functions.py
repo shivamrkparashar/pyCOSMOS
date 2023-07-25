@@ -4,12 +4,14 @@ from pylab import *
 import plotly.graph_objs as go
 import plotly.express as px
 import plotly.io as pio
-pio.renderers.default ="browser"
+
+pio.renderers.default = "browser"
 import pandas as pd
 from sklearn.cluster import *
 from math import sqrt
 from numpy import floor, ceil
 import config
+
 
 def plot_histogram(arr, nbins):
     """
@@ -22,13 +24,14 @@ def plot_histogram(arr, nbins):
     figure()
     # The min and max (range) of the histogram are the nearest integers given by floor or ceil
     range = (floor(arr.min()), ceil(arr.max()))
-    hist(arr, density =True, bins = nbins, range = range, color ='orange', edgecolor='black', linewidth=1)
+    hist(arr, density=True, bins=nbins, range=range, color='orange', edgecolor='black', linewidth=1)
     xlabel('Diameter ($\AA$)')
     ylabel('Normalized Distribution')
-    xlim(0,)
-    ylim(0,)
-    savefig('PSD.jpg', format='jpg',dpi=300 ,bbox_inches='tight')
+    xlim(0, )
+    ylim(0, )
+    savefig('PSD.jpg', format='jpg', dpi=300, bbox_inches='tight')
     close()
+
 
 def xyz_to_abc(x, y, z):
     """
@@ -41,13 +44,16 @@ def xyz_to_abc(x, y, z):
     :return:
     """
 
-    a = x - np.cos(config.gamma)/(np.sin(config.gamma))*y + \
-        config.Lx * config.Ly * config.Lz *(np.cos(config.alpha)* np.cos(config.gamma)-np.cos(config.beta))/(config.Volume_of_uc*np.sin(config.gamma))*z
-    b = 0   + 1/(np.sin(config.gamma))*y + \
-        config.Lx * config.Ly * config.Lz *(np.cos(config.beta)* np.cos(config.gamma)-np.cos(config.alpha))/(config.Volume_of_uc*np.sin(config.gamma))*z
-    c = 0   +  0 + config.Lx * config.Ly * config.Lz *np.sin(config.gamma)/config.Volume_of_uc * z
+    a = x - np.cos(config.gamma) / (np.sin(config.gamma)) * y + \
+        config.Lx * config.Ly * config.Lz * (np.cos(config.alpha) * np.cos(config.gamma) - np.cos(config.beta)) / (
+                    config.Volume_of_uc * np.sin(config.gamma)) * z
+    b = 0 + 1 / (np.sin(config.gamma)) * y + \
+        config.Lx * config.Ly * config.Lz * (np.cos(config.beta) * np.cos(config.gamma) - np.cos(config.alpha)) / (
+                    config.Volume_of_uc * np.sin(config.gamma)) * z
+    c = 0 + 0 + config.Lx * config.Ly * config.Lz * np.sin(config.gamma) / config.Volume_of_uc * z
 
     return a, b, c
+
 
 def abc_to_xyz(a, b, c):
     """
@@ -59,12 +65,13 @@ def abc_to_xyz(a, b, c):
     :return:
     """
 
-    x = a + b*np.cos(config.gamma) + c*np.cos(config.beta)
-    y = 0   + b*np.sin(config.gamma) + c*(np.cos(config.alpha) -
-                    np.cos(config.beta)* np.cos(config.gamma))/np.sin(config.gamma)
-    z = 0  +  0 + config.Volume_of_uc/(config.Lx*config.Ly*config.Lz*np.sin(config.gamma))*c
+    x = a + b * np.cos(config.gamma) + c * np.cos(config.beta)
+    y = 0 + b * np.sin(config.gamma) + c * (np.cos(config.alpha) -
+                                            np.cos(config.beta) * np.cos(config.gamma)) / np.sin(config.gamma)
+    z = 0 + 0 + config.Volume_of_uc / (config.Lx * config.Ly * config.Lz * np.sin(config.gamma)) * c
 
     return x, y, z
+
 
 def read_vpsdpts(INPUT):
     """
@@ -90,11 +97,11 @@ def read_vpsdpts(INPUT):
             linenumber += 1
             if linenumber > 2:
                 s = line.split()
-                if int(s[0]) == 1: # only considering node sphere, disregarding ghost cell sphere
+                if int(s[0]) == 1:  # only considering node sphere, disregarding ghost cell sphere
                     x.append(float(s[1]))
                     y.append(float(s[2]))
                     z.append(float(s[3]))
-                    diameter.append(2*float(s[4]))
+                    diameter.append(2 * float(s[4]))
 
     # Convert lists into numpy arrays
     x = np.array(x)
@@ -105,6 +112,7 @@ def read_vpsdpts(INPUT):
     a, b, c = xyz_to_abc(x, y, z)
 
     return a, b, c, diameter
+
 
 def make_histogram(diameter_arr, nbins):
     """
@@ -125,13 +133,13 @@ def make_histogram(diameter_arr, nbins):
     """
     # The min and max (range) of the histogram are the nearest integers given by floor or ceil
     range = (floor(diameter_arr.min()), ceil(diameter_arr.max()))
-    bin_freq, bin_edges =  np.histogram(diameter_arr, bins =nbins, range = range) # Length nbins + 1
-    #bin_freq, bin_edges =  np.histogram(diameter_arr, bins =nbins, range = (0, np.ceil(diameter_arr.max()))) # Length nbins + 1
+    bin_freq, bin_edges = np.histogram(diameter_arr, bins=nbins, range=range)  # Length nbins + 1
+    # bin_freq, bin_edges =  np.histogram(diameter_arr, bins =nbins, range = (0, np.ceil(diameter_arr.max()))) # Length nbins + 1
 
     bin_index = np.zeros(len(diameter_arr))
     for i, di in enumerate(diameter_arr):
         for j, _ in enumerate(bin_edges):
-            if di > bin_edges[j] and di <= bin_edges[j+1]:
+            if di > bin_edges[j] and di <= bin_edges[j + 1]:
                 bin_index[i] = j
 
     return bin_freq, bin_edges, bin_index
@@ -153,22 +161,23 @@ def periodic_distance(v1, v2):
     da = v1[0] - v2[0]
     db = v1[1] - v2[1]
     dc = v1[2] - v2[2]
-    
-    if abs(da) > config.Lx/2:
-        da = config.Lx - abs(da)
-    
-    if abs(db) > config.Ly/2:
-        db = config.Ly - abs(db)
-        
-    if abs(dc) > config.Lz/2:
-        dc = config.Lz - abs(dc)
-    
-    #squared_distance = da**2 + db**2 + dc**2
 
-    squared_distance = da**2 + db**2 + dc**2 + 2*da*db*np.cos(config.gamma)\
-                       + 2*db*dc*np.cos(config.alpha) + 2*dc*da*np.cos(config.beta)
-    
+    if abs(da) > config.Lx / 2:
+        da = config.Lx - abs(da)
+
+    if abs(db) > config.Ly / 2:
+        db = config.Ly - abs(db)
+
+    if abs(dc) > config.Lz / 2:
+        dc = config.Lz - abs(dc)
+
+    # squared_distance = da**2 + db**2 + dc**2
+
+    squared_distance = da ** 2 + db ** 2 + dc ** 2 + 2 * da * db * np.cos(config.gamma) \
+                       + 2 * db * dc * np.cos(config.alpha) + 2 * dc * da * np.cos(config.beta)
+
     return sqrt(squared_distance)
+
 
 def update_pore_type_matrix(xk, yk, zk, cluster_labels):
     """
@@ -194,6 +203,7 @@ def update_pore_type_matrix(xk, yk, zk, cluster_labels):
         xi, yi, zi = int(floor(xgrid[i])), int(floor(ygrid[i])), int(floor(zgrid[i]))
         config.pore_type_matrix_with_pore_type_labels[xi, yi, zi] = li
 
+
 def fill_pore_type_matrix():
     """
     based on only the cluster centers and cluster sizes
@@ -216,29 +226,31 @@ def fill_pore_type_matrix():
 
     # Print pore centers, diameter and pore type to a file
     with open('pore_centers.txt', 'w') as out:
-        out.write('Box %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f \n' %(config.Lx, config.Ly, config.Lz, config.alpha_degree
-                ,config.beta_degree, config.gamma_degree))
-        #out.write("sphere \t xc \t yc \t zc \t diameter \t pore_type \n" )
-        #out.write("channel \t xc \t yc \t zc \t diameter \t ox \t oy \t oz \t pore_type \n" )
+        out.write('Box %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f \n' % (config.Lx, config.Ly, config.Lz, config.alpha_degree
+                                                                  , config.beta_degree, config.gamma_degree))
+        # out.write("sphere \t xc \t yc \t zc \t diameter \t pore_type \n" )
+        # out.write("channel \t xc \t yc \t zc \t diameter \t ox \t oy \t oz \t pore_type \n" )
 
         for i, center_cord in enumerate(all_cluster_center_list_flatten):
             ac, bc, cc = center_cord
             xc, yc, zc = abc_to_xyz(ac, bc, cc)
             if all_cluster_shape_list_flatten[i] == 'sphere':
-                out.write("sphere %1.3f %1.3f %1.3f %1.3f %d \n"%(xc, yc, zc, all_cluster_diameter_list_flatten[i],
-                                                       all_cluster_pore_type_labels_flatten[i]))
+                out.write("sphere %1.3f %1.3f %1.3f %1.3f %d \n" % (xc, yc, zc, all_cluster_diameter_list_flatten[i],
+                                                                    all_cluster_pore_type_labels_flatten[i]))
             if all_cluster_shape_list_flatten[i] == 'channel':
                 # v1 and v2 are vectors on the end of the cylinder
-                v1 = center_cord - all_cluster_orientation_list_flatten[i]*all_cluster_length_list_flatten[i]/2.
-                v2 = center_cord + all_cluster_orientation_list_flatten[i]*all_cluster_length_list_flatten[i]/2.
+                v1 = center_cord - all_cluster_orientation_list_flatten[i] * all_cluster_length_list_flatten[i] / 2.
+                v2 = center_cord + all_cluster_orientation_list_flatten[i] * all_cluster_length_list_flatten[i] / 2.
 
                 v1 = np.array(abc_to_xyz(v1[0], v1[1], v1[2]))
                 v2 = np.array(abc_to_xyz(v2[0], v2[1], v2[2]))
 
-                out.write("channel %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f %d \n"%(v1[0], v1[1], v1[2],\
-                    v2[0], v2[1], v2[2], all_cluster_diameter_list_flatten[i], all_cluster_pore_type_labels_flatten[i]))
-
-
+                out.write("channel %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f %d \n" % (v1[0], v1[1], v1[2], \
+                                                                                       v2[0], v2[1], v2[2],
+                                                                                       all_cluster_diameter_list_flatten[
+                                                                                           i],
+                                                                                       all_cluster_pore_type_labels_flatten[
+                                                                                           i]))
 
     # 3d grid in the unit cell
     a = np.arange(0.5, (int(ceil(config.Lx))) + 0.5)
@@ -249,8 +261,6 @@ def fill_pore_type_matrix():
         for j, bi in enumerate(b):
             for k, ci in enumerate(c):
 
-
-
                 # calculate distance of the point to each of the cluster surface
                 # This include all clusters that belong to different pore types
                 distance_from_cluster_surface = []
@@ -260,25 +270,25 @@ def fill_pore_type_matrix():
 
                     if all_cluster_shape_list_flatten[cc] == 'sphere':
                         distance_from_cluster_surface.append(periodic_distance(np.array([ai, bi, ci]), cluster_center)
-                                                         - 0.5 * all_cluster_diameter_list_flatten[cc])
+                                                             - 0.5 * all_cluster_diameter_list_flatten[cc])
 
                     if all_cluster_shape_list_flatten[cc] == 'channel':
                         # THis distance is not periodic
                         # Find the point on the line which is perpendicular to the grid point
                         # vector connecting the grid point to the cluster center
-                        vec = np.array([ai, bi, ci])-cluster_center
+                        vec = np.array([ai, bi, ci]) - cluster_center
                         vec_xyz = np.array(abc_to_xyz(vec[0], vec[1], vec[2]))
 
                         # vector along the orientation of the channel shaped cluster
                         ox, oy, oz = all_cluster_orientation_list_flatten[cc]
                         orient_xyz = np.array(abc_to_xyz(ox, oy, oz))
 
-                        alpha = np.dot(vec_xyz, orient_xyz)/np.linalg.norm(orient_xyz)**2
+                        alpha = np.dot(vec_xyz, orient_xyz) / np.linalg.norm(orient_xyz) ** 2
                         # d vector is the point on the line which is closest to the grid point (ai, bi, ci)
-                        d = alpha*orient_xyz + cluster_center
+                        d = alpha * orient_xyz + cluster_center
 
                         dist = periodic_distance(np.array([ai, bi, ci]), d)
-                        #dist = np.linalg.norm(np.cross(np.array(vec_xyz), np.array(orient_xyz)))
+                        # dist = np.linalg.norm(np.cross(np.array(vec_xyz), np.array(orient_xyz)))
                         distance_from_cluster_surface.append(dist - 0.5 * all_cluster_diameter_list_flatten[cc])
 
                 # index of the distance_from_cluster_center list where the distance is minimum
@@ -290,9 +300,10 @@ def fill_pore_type_matrix():
                 # proceed only if the pore type matrix has -1
                 # This is done to make sure the grid points calculated using the largest and
                 # second largest bins, and third largest bins do not get overwritten
-                if config.pore_type_matrix_with_pore_type_labels[i, j, k] == -2: # only if the grid points are unassigned
-                    config.pore_type_matrix_with_pore_type_labels[i][j][k] = all_cluster_pore_type_labels_flatten[index_min]
-
+                if config.pore_type_matrix_with_pore_type_labels[
+                    i, j, k] == -2:  # only if the grid points are unassigned
+                    config.pore_type_matrix_with_pore_type_labels[i][j][k] = all_cluster_pore_type_labels_flatten[
+                        index_min]
 
 
 def show_pore_type_matrix():
@@ -320,48 +331,51 @@ def show_pore_type_matrix():
                 pore_type_label_1d.append(config.pore_type_matrix_with_pore_type_labels[i][j][k])
                 cluster_center_label_1d.append(config.pore_type_matrix_with_cluster_labels[i][j][k])
 
-    d = {'x':xx, 'y':yy, 'z':zz, 'color':pore_type_label_1d}
-    df = pd.DataFrame(data = d)
-    df.to_csv(config.File_pore_type_matrix, index =False)
+    d = {'x': xx, 'y': yy, 'z': zz, 'color': pore_type_label_1d}
+    df = pd.DataFrame(data=d)
+    df.to_csv(config.File_pore_type_matrix, index=False)
 
     df["color"] = df["color"].astype(str)
-    fig = px.scatter_3d(df, x = 'x', y = 'y', z='z', color = 'color',)
+    fig = px.scatter_3d(df, x='x', y='y', z='z', color='color', )
     fig.update_traces(marker=dict(size=6,
                                   line=dict(width=0.5,
                                             color='Black')),
                       selector=dict(mode='markers'),
-                      marker_symbol = 'square')
+                      marker_symbol='square')
 
     fig.write_html("pore_type_matrix_with_pore_type_labels.html")
     fig.show()
 
-    d = {'x':xx, 'y':yy, 'z':zz, 'color':cluster_center_label_1d}
-    df = pd.DataFrame(data = d)
-    df.to_csv('pore_type_matrix_with_cluster_center_label.csv', index =False)
+    d = {'x': xx, 'y': yy, 'z': zz, 'color': cluster_center_label_1d}
+    df = pd.DataFrame(data=d)
+    df.to_csv('pore_type_matrix_with_cluster_center_label.csv', index=False)
 
     df["color"] = df["color"].astype(str)
-    fig = px.scatter_3d(df, x = 'x', y = 'y', z='z', color = 'color',)
+    fig = px.scatter_3d(df, x='x', y='y', z='z', color='color', )
     fig.update_traces(marker=dict(size=6,
                                   line=dict(width=0.5,
                                             color='Black')),
                       selector=dict(mode='markers'),
-                      marker_symbol = 'square')
+                      marker_symbol='square')
 
     fig.write_html("pore_type_matrix_with_cluster_center_labels.html")
     fig.show()
+
+
 def dbscan(ak, bk, ck, periodic_distance_matrix, eps, min_samples):
     """
     DBSCAN to cluster points
     """
-    sol = DBSCAN(eps = eps, min_samples = min_samples,metric = "precomputed", n_jobs =8).fit(periodic_distance_matrix)
-    labels = sol.labels_ # can be -1, 0, 1, 2 ..., Ncluster-1
+    sol = DBSCAN(eps=eps, min_samples=min_samples, metric="precomputed", n_jobs=8).fit(periodic_distance_matrix)
+    labels = sol.labels_  # can be -1, 0, 1, 2 ..., Ncluster-1
 
     # calculate cluster centers
-    #cluster_center_list, cluster_diameter_list = best_cluster_center(ak, bk, ck, labels)
+    # cluster_center_list, cluster_diameter_list = best_cluster_center(ak, bk, ck, labels)
     cluster_center_list = best_cluster_center(ak, bk, ck, labels)
 
-    #return labels, cluster_center_list, cluster_diameter_list
+    # return labels, cluster_center_list, cluster_diameter_list
     return labels, cluster_center_list
+
 
 def best_cluster_center(ak, bk, ck, labels):
     """
@@ -382,9 +396,9 @@ def best_cluster_center(ak, bk, ck, labels):
 
     # Number of clusters identified within this bin,
     # Ncluster does not accuont for -1 labels which corresponds to the noise
-    Ncluster = max(np.unique(labels))+1
+    Ncluster = max(np.unique(labels)) + 1
 
-    if Ncluster == 0: # if only one cluster
+    if Ncluster == 0:  # if only one cluster
         if labels[0] == -1:
             print('All data points classified as noise')
             # return empty list
@@ -398,11 +412,10 @@ def best_cluster_center(ak, bk, ck, labels):
 
     # Center = mean over all the points with same labels
     for li in range(Ncluster):
-        mask = labels == li # all points with the same labels
+        mask = labels == li  # all points with the same labels
         a_center[li] = np.mean(ak[mask])
         b_center[li] = np.mean(bk[mask])
         c_center[li] = np.mean(ck[mask])
-
 
     """
     # To calculate actual center of the cluster
@@ -413,24 +426,25 @@ def best_cluster_center(ak, bk, ck, labels):
     # calculating the actual center of the cluster which has the minimum distance squared from all its points
 
     for li in range(Ncluster):
-        sum_distance_from_center_list = [] # one element for each image of cluster center
+        sum_distance_from_center_list = []  # one element for each image of cluster center
 
-        for da in [0, config.Lx/2, -config.Lx/2]:
-            for db in [0, config.Ly/2, -config.Ly/2]:
-                for dc in [0, config.Lz/2, -config.Lz/2]:
+        for da in [0, config.Lx / 2, -config.Lx / 2]:
+            for db in [0, config.Ly / 2, -config.Ly / 2]:
+                for dc in [0, config.Lz / 2, -config.Lz / 2]:
                     a_new_center = a_center[li] + da
                     b_new_center = b_center[li] + db
                     c_new_center = c_center[li] + dc
 
                     # new center should be inside the unit cell
-                    a_new_center, b_new_center, c_new_center = put_point_in_box(a_new_center, b_new_center, c_new_center)
+                    a_new_center, b_new_center, c_new_center = put_point_in_box(a_new_center, b_new_center,
+                                                                                c_new_center)
                     new_center = np.array([a_new_center, b_new_center, c_new_center])
 
                     # the sum of squares of the distance
                     sum_distance2_from_center = 0
-                    #mask = labels == li
-                    #points = np.array(ak[mask], bk[mask], ck[mask])
-                    #sum_distance2_from_center = np.sum(distance(new_center, points)**2)
+                    # mask = labels == li
+                    # points = np.array(ak[mask], bk[mask], ck[mask])
+                    # sum_distance2_from_center = np.sum(distance(new_center, points)**2)
 
                     for j, lj in enumerate(labels):
                         if lj == li:
@@ -440,37 +454,37 @@ def best_cluster_center(ak, bk, ck, labels):
                     sum_distance_from_center_list.append(sum_distance2_from_center)
 
         index_min = np.argmin(sum_distance_from_center_list)
-        #index_min = min(range(len(sum_distance_from_center_list)), key=sum_distance_from_center_list.__getitem__)
+        # index_min = min(range(len(sum_distance_from_center_list)), key=sum_distance_from_center_list.__getitem__)
 
-        #print(li, index_min)
+        # print(li, index_min)
         index = 0
-        #Npoints_in_cluster = 0
+        # Npoints_in_cluster = 0
 
-        for da in [0, config.Lx/2, -config.Lx/2]:
-            for db in [0, config.Ly/2, -config.Ly/2]:
-                for dc in [0, config.Lz/2, -config.Lz/2]:
+        for da in [0, config.Lx / 2, -config.Lx / 2]:
+            for db in [0, config.Ly / 2, -config.Ly / 2]:
+                for dc in [0, config.Lz / 2, -config.Lz / 2]:
                     if index == index_min:
                         a_new_center = a_center[li] + da
                         b_new_center = b_center[li] + db
                         c_new_center = c_center[li] + dc
 
                         # new center should be inside the unit cell
-                        a_new_center, b_new_center, c_new_center = put_point_in_box(a_new_center, b_new_center, c_new_center)
-
+                        a_new_center, b_new_center, c_new_center = put_point_in_box(a_new_center, b_new_center,
+                                                                                    c_new_center)
 
                         # cluster_diameter based on radius of gyration
-                        #radius_of_gyration = sqrt(sum_distance_from_center_list[index]/np.count_nonzero(labels==li))
-                        #max_cluster_size = 2*(3./4/np.pi* np.count_nonzero(labels==li)/config.rho)**(1/3.)
+                        # radius_of_gyration = sqrt(sum_distance_from_center_list[index]/np.count_nonzero(labels==li))
+                        # max_cluster_size = 2*(3./4/np.pi* np.count_nonzero(labels==li)/config.rho)**(1/3.)
 
-                        #cluster_diameter = 2*radius_of_gyration
-                        #cluster_diameter = max_cluster_size
+                        # cluster_diameter = 2*radius_of_gyration
+                        # cluster_diameter = max_cluster_size
 
                         cluster_center_list.append(np.array([a_new_center, b_new_center, c_new_center]))
-                        #cluster_diameter_list.append(cluster_diameter)
-                        #print('-----------Cluster # %d ---------------' %li)
-                        #print('Center (a, b, c) = %1.3g, %1.3g, %1.3g' %(a_new_center, b_new_center, c_new_center))
-                        #print('2Rg = %1.3g A, Cluster size = %1.3g' %(2*radius_of_gyration, max_cluster_size))
-                        #print('---------------------------------------')
+                        # cluster_diameter_list.append(cluster_diameter)
+                        # print('-----------Cluster # %d ---------------' %li)
+                        # print('Center (a, b, c) = %1.3g, %1.3g, %1.3g' %(a_new_center, b_new_center, c_new_center))
+                        # print('2Rg = %1.3g A, Cluster size = %1.3g' %(2*radius_of_gyration, max_cluster_size))
+                        # print('---------------------------------------')
 
                     index += 1
 
@@ -483,7 +497,8 @@ def best_cluster_center(ak, bk, ck, labels):
                 radius_list.append(radius)
         """
     return cluster_center_list
-    #return(cluster_center_list, cluster_diameter_list)
+    # return(cluster_center_list, cluster_diameter_list)
+
 
 def put_point_in_box(a, b, c):
     """
