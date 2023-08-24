@@ -51,11 +51,11 @@ python pyCOSMOS/src/main.py input.txt
 The results of the algorithm is in the form of a pore type matrix of size $$(lx \times ly \times ly)$$.
 
 csv files-
-1. pore_type_matrix_with_cluster_labels.csv
-2. pore_type_matrix_with_pore_type_labels.csv
+1. `pore_type_matrix_with_cluster_labels.csv`
+2. `pore_type_matrix_with_pore_type_labels.csv`
 
 html file (can be viewed on browser)-
-1. pore_type_matrix_with_cluster_center_labels.html
-2. pore_type_matrix_with_pore_type_labels.html
-3. geometric_points_with_cluster_labels_for_pore_type_*Npores.html 
+1. `pore_type_matrix_with_cluster_center_labels.html`
+2. `pore_type_matrix_with_pore_type_labels.html`
+3. `geometric_points_with_cluster_labels_for_pore_type_*Npores.html`
 
