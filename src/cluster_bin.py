@@ -162,7 +162,7 @@ def classify_bin(cluster_shape_list, diak, cluster_labels, boi):
 
 def plot_xyz(xk, yk, zk, cluster_labels):
     """
-
+    plot geometric probe particles using plotly express
     :param xk: numpy arrays
     :param yk: numpy arrays
     :param zk: numpy arrays
@@ -183,6 +183,10 @@ def plot_xyz(xk, yk, zk, cluster_labels):
 
 
 def draw_unit_cell_mayavi():
+    """
+    draws a unit cell box in mayavi
+    :return:
+    """
     black = (0, 0, 0)
     white = (1, 1, 1)
     mlab.figure(bgcolor=white, size=(800, 800))
@@ -210,7 +214,6 @@ def draw_unit_cell_mayavi():
         i, j = index
         draw_line(cord[i], cord[j])
 
-
 def plot_pore_centers_mayavi():
     def plot_sphere(x0, y0, z0, r, color):
         """
@@ -232,22 +235,21 @@ def plot_pore_centers_mayavi():
     def plot_cylinder(x1, y1, z1, x2, y2, z2, r, color):
         """
 
-        :param x1:
-        :param y1:
-        :param z1:
-        :param x2:
-        :param y2:
-        :param z2:
-        :param r:
-        :param color:
+        draws a cylinder from (x1, y1, z1) to (x2, y2, z2)
+        :param r: radius of the cylinder
+        :param color: color of the cylinder
         :return:
         """
-        return mlab.plot3d([x1, x2], [y1, y2], [z1, z2], tube_radius=r, color=color)
+        return mlab.plot3d([x1, x2], [y1, y2], [z1, z2], tube_radius=r, tube_sides=30, color=color)
 
     all_cluster_pore_type_labels_flatten = [j for sub in config.all_cluster_pore_type_labels for j in sub]
     all_cluster_center_list_flatten = [j for sub in config.all_cluster_center_list for j in sub]
     all_cluster_diameter_list_flatten = [j for sub in config.all_cluster_diameter_list for j in sub]
+    all_cluster_length_list_flatten = [j for sub in config.all_cluster_length_list for j in sub]
+    all_cluster_shape_list_flatten = [j for sub in config.all_cluster_shape_list for j in sub]
+    all_cluster_orientation_list_flatten = [j for sub in config.all_cluster_orientation_list for j in sub]
 
+    # calculate cluster center in x y z coordinates
     ac, bc, cc = [], [], []
     for cluster_center in all_cluster_center_list_flatten:
         ac.append(cluster_center[0])
@@ -258,13 +260,28 @@ def plot_pore_centers_mayavi():
     xc, yc, zc = abc_to_xyz(ac, bc, cc)
 
     # red, blue, green, yellow
-    sphere_color = [(1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 1, 0)]
+    shape_color = [(1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 1, 0)]
 
     draw_unit_cell_mayavi()
 
-    for xi, yi, zi, di, label in zip(xc, yc, zc, all_cluster_diameter_list_flatten,
-                                     all_cluster_pore_type_labels_flatten):
-        plot_sphere(xi, yi, zi, di / 2, color=sphere_color[label - 1])
+    for i, center_cord in enumerate(all_cluster_center_list_flatten):
+
+        color = shape_color[all_cluster_pore_type_labels_flatten[i]-1]
+        if all_cluster_shape_list_flatten[i] == 'sphere':
+
+            plot_sphere(xc[i], yc[i], zc[i], all_cluster_diameter_list_flatten[i]/2,
+                        color=color)
+
+        if all_cluster_shape_list_flatten[i] == 'channel':
+            # v1 and v2 are vectors on the end of the cylinder
+            v1 = center_cord - all_cluster_orientation_list_flatten[i] * all_cluster_length_list_flatten[i] / 2.
+            v2 = center_cord + all_cluster_orientation_list_flatten[i] * all_cluster_length_list_flatten[i] / 2.
+
+            plot_cylinder(v1[0], v1[1], v1[2], v2[0], v2[1], v2[2], all_cluster_diameter_list_flatten[i]/2, color=color)
+
+    #for xi, yi, zi, di, label in zip(xc, yc, zc, all_cluster_diameter_list_flatten,
+    #                                 all_cluster_pore_type_labels_flatten):
+    #    plot_sphere(xi, yi, zi, di / 2, color=shape_color[label - 1])
 
     mlab.savefig('fig_pore_centers.jpg')
     # mlab.savefig('pore_centers.obj')
