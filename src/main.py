@@ -2,6 +2,7 @@ import config
 import numpy as np
 from clustering_functions import *
 from cluster_bin import *
+from visualize import *
 import time
 import periodic_distance
 import sys
