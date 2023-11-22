@@ -1,3 +1,0 @@
-
-python ../../src/main.py IRMOF-1.vpsdpts 25.832 | tee summary.txt
-
