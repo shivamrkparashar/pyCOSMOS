@@ -1,8 +1,8 @@
 import numpy as np
 import config
-from clustering_functions import periodic_distance, abc_to_xyz, put_point_in_box
+from clustering_functions import periodic_distance, abc_to_xyz, put_point_in_box, abc_to_xyz_arrays
 
-def save_cluster_as_xyz(bin_number, cluster_number, x_arr, y_arr, z_arr):
+def save_cluster_as_xyz(bin_number, cluster_number, x_arr, y_arr, z_arr, name=''):
     """
     Saves the x, y, z arrays as an xyz file for visualization in vmd
     A different element is chosen for each clusters
@@ -13,7 +13,7 @@ def save_cluster_as_xyz(bin_number, cluster_number, x_arr, y_arr, z_arr):
     :param z_arr:
     :return:
     """
-    xyz_file = 'bin_%d_cluster_%d.xyz' %(bin_number, cluster_number)
+    xyz_file = '%sbin_%d_cluster_%d.xyz' %(name, bin_number, cluster_number)
     Natoms = len(x_arr)
 
     with open(xyz_file, 'w') as out:
@@ -24,7 +24,7 @@ def save_cluster_as_xyz(bin_number, cluster_number, x_arr, y_arr, z_arr):
 
 def classify_cluster_shape(bin_number, cluster_number, ac, bc, cc, center):
     """
-    Classifies the cluster to be either sphericla or channel type
+    Classifies the cluster to be either spherical or channel type
     The input cluster coordinates are centered at the unit cell
 
     :param bin_number:
@@ -35,30 +35,42 @@ def classify_cluster_shape(bin_number, cluster_number, ac, bc, cc, center):
     :param center:
     :return:
     """
-    points_xyz = []
-    for ai, bi, ci in zip(ac, bc, cc):
-        points_xyz.append(abc_to_xyz(ai, bi, ci))
-    points_xyz = np.array(points_xyz)
-    save_cluster_as_xyz(bin_number, cluster_number, points_xyz[:, 0], points_xyz[:, 1], points_xyz[:, 2] )
+    x, y, z = abc_to_xyz_arrays(ac, bc, cc)
+    save_cluster_as_xyz(bin_number, cluster_number, x, y, z)
 
-    shape = 'sphere'
-    ac, bc, cc = centralize_cluster(ac, bc, cc, center)
     orientation = np.array([0, 0, 0])
-    if np.isclose(np.amin(ac), 0, atol = 1) and np.isclose(np.amax(ac), config.Lx, atol = 1):
-        shape = 'channel'
-        orientation += np.array([1, 0, 0])
 
-    if np.isclose(np.amin(bc), 0, atol = 1) and np.isclose(np.amax(bc), config.Ly, atol = 1):
-        shape = 'channel'
-        orientation += np.array([0, 1, 0])
+    ac, bc, cc = centralize_cluster(ac, bc, cc, center)
 
-    if np.isclose(np.amin(cc), 0, atol = 1) and np.isclose(np.amax(cc), config.Lz, atol = 1):
-        shape = 'channel'
-        orientation += np.array([0, 0, 1])
+    # check if the cluster of points is a channel
+    atol = 1
+    if np.isclose(np.amin(ac), 0, atol=atol) and np.isclose(np.amax(ac), config.Lx, atol=atol):
+        hist, bin_edges = np.histogram(ac, bins=20, density=True)
+        if np.any(np.absolute(hist) < 1e-2):
+            orientation += np.array([0, 0, 0])
+        else:
+            orientation += np.array([1, 0, 0])
 
-    #orientation = np.array(orientation)
-    if not np.isclose(np.linalg.norm(orientation), 0, atol = 1e-4):
-        orientation = orientation/np.linalg.norm(orientation)
+    if np.isclose(np.amin(bc), 0, atol=atol) and np.isclose(np.amax(bc), config.Ly, atol=atol):
+        hist, bin_edges = np.histogram(bc, bins=20, density=True)
+        if np.any(np.absolute(hist) < 1e-2):
+            orientation += np.array([0, 0, 0])
+        else:
+            orientation += np.array([0, 1, 0])
+
+    if np.isclose(np.amin(cc), 0, atol=atol) and np.isclose(np.amax(cc), config.Lz, atol=atol):
+        hist, bin_edges = np.histogram(cc, bins=20, density=True)
+        if np.any(np.absolute(hist) < 1e-2):
+            orientation += np.array([0, 0, 0])
+        else:
+            orientation += np.array([0, 0, 1])
+
+    if (orientation == np.array([0, 0, 0])).all():
+        shape = 'sphere'
+    else:
+        shape = 'channel'
+        if not np.isclose(np.linalg.norm(orientation), 0, atol=1e-4):
+            orientation = orientation/np.linalg.norm(orientation)
 
     Npoints = len(ac)
     print('--------------- Cluster # %d ---------------' %cluster_number)
@@ -130,6 +142,7 @@ def centralize_cluster(ac, bc, cc, center):
         bn.append(bi)
         cn.append(ci)
 
+    # convert to numpy arrays
     an = np.array(an)
     bn = np.array(bn)
     cn = np.array(cn)
