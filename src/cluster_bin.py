@@ -126,6 +126,7 @@ def classify_bin(cluster_shape_list, diak, cluster_labels, boi):
         # This bin cannot be regarded as a new pore type
         # print('bin contains noisy points')
         # print('Starting with another bin')
+        print(f"fraction of noisy points classified by DBSCAN: {fraction_of_noisy_points}")
         print('nbin = %d is a Secondary bin because fraction of noisy points is larger' % boi)
         return 0
 
@@ -136,29 +137,21 @@ def classify_bin(cluster_shape_list, diak, cluster_labels, boi):
         Npoints_per_cluster = 0
 
     print("Number of points per cluster = %1.0f" % Npoints_per_cluster)
-    if cluster_shape_list[0] == 'sphere':
 
-        Nc = 50000 / config.Volume_of_uc * np.pi / 6 * np.average(diak) ** 3
+    if cluster_shape_list[0] == 'sphere':
+        Nc = config.Nprobe / config.Volume_of_uc * np.pi / 6 * np.average(diak) ** 3
         print("Points per cluster required for a spherical primary bin = %1.0f " % Nc)
 
-        if Npoints_per_cluster < 0.5 * Nc:
+        if Npoints_per_cluster < 0.1 * Nc:
             print('nbin = %d is a Secondary bin because of too many small noisy clusters' % boi)
             return 0
 
         else:
             return 1
 
-        """
-        if Npoints_per_cluster > Nc:
-            # print('nbin = %d is a Secondary bin because of big noisy clusters' % boi)
-            print('Reduce the DBSCAN parameter epsilon' % boi)
-            return 1
-        """
-
     if cluster_shape_list[0] == 'channel':
         # New pore type found
         return 1
-
 
 def plot_xyz(xk, yk, zk, cluster_labels):
     """
