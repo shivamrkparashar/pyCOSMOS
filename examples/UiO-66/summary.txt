@@ -1,0 +1,93 @@
+INPUT is  input_pycosmos.dat
+Unit cell: 20.866 20.866 20.866 90.000 90.000 90.000
+Number of Pore types:  2
+Volume of uc [A^3]: 9085.239 
+nbins =  4
+
+================================================================
+Currently at nbin = 2
+
+Average geometric diameter of bin: 7.4 Ang
+DBSCAN parameters, 2.500, 30.0 
+
+Number of clusters identified = 8 
+--------------- Cluster # 0 ---------------
+Center (a, b, c) = 15.7, 15.7, 15.7
+shape = sphere
+Diameter = 4.55 
+
+--------------- Cluster # 1 ---------------
+Center (a, b, c) = 5.14, 15.6, 5.21
+shape = sphere
+Diameter = 4.24 
+
+--------------- Cluster # 2 ---------------
+Center (a, b, c) = 5.12, 15.6, 15.7
+shape = sphere
+Diameter = 5.06 
+
+--------------- Cluster # 3 ---------------
+Center (a, b, c) = 15.5, 5.21, 5.41
+shape = sphere
+Diameter = 4.29 
+
+--------------- Cluster # 4 ---------------
+Center (a, b, c) = 15.6, 5.27, 15.6
+shape = sphere
+Diameter = 5.19 
+
+--------------- Cluster # 5 ---------------
+Center (a, b, c) = 15.6, 15.6, 5.27
+shape = sphere
+Diameter = 5.31 
+
+--------------- Cluster # 6 ---------------
+Center (a, b, c) = 5.15, 5.16, 15.6
+shape = sphere
+Diameter = 4.36 
+
+--------------- Cluster # 7 ---------------
+Center (a, b, c) = 5.21, 5.26, 5.14
+shape = sphere
+Diameter = 5.22 
+
+Number of points per cluster = 322
+Points per cluster required for a spherical primary bin = 1187 
+New pore type identified, pore type count =  1
+
+================================================================
+Currently at nbin = 3
+
+Average geometric diameter of bin: 8.6 Ang
+DBSCAN parameters, 2.500, 30.0 
+
+Number of clusters identified = 4 
+--------------- Cluster # 0 ---------------
+Center (a, b, c) = 20.2, 20.8, 10.3
+shape = sphere
+Diameter = 6.07 
+
+--------------- Cluster # 1 ---------------
+Center (a, b, c) = 10.4, 20.6, 0.38
+shape = sphere
+Diameter = 6.19 
+
+--------------- Cluster # 2 ---------------
+Center (a, b, c) = 10.5, 10.4, 10.4
+shape = sphere
+Diameter = 6.00 
+
+--------------- Cluster # 3 ---------------
+Center (a, b, c) = 20.6, 10.5, 0.36
+shape = sphere
+Diameter = 5.99 
+
+Number of points per cluster = 643
+Points per cluster required for a spherical primary bin = 1819 
+New pore type identified, pore type count =  2
+===================================================================
+All Primary bins identified
+Number of pore types = 2
+Analyzing the secondary bins
+Updating pore type matrix
+-------------------------

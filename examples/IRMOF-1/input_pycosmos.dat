@@ -1,0 +1,10 @@
+vpsdpts	 /home/shivam/Desktop/Automatic_compartmentalization/Program/pyCOSMOS/new_example/vpsdpts/IRMOF-1.vpsdpts
+lx	 25.8320
+ly	 25.8320
+lz	 25.8320
+alpha	 90.0000
+beta	 90.0000
+gamma	 90.0000
+npore	 2
+eps	 2.500 
+nmin	 30 

@@ -1,0 +1,10 @@
+vpsdpts	 /home/shivam/Desktop/Automatic_compartmentalization/Program/pyCOSMOS/new_example/vpsdpts/UiO-66.vpsdpts
+lx	 20.8663
+ly	 20.8663
+lz	 20.8663
+alpha	 90.0000
+beta	 90.0000
+gamma	 90.0000
+npore	 2
+eps	 2.500 
+nmin	 30 
