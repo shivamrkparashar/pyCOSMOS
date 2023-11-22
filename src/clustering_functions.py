@@ -57,8 +57,6 @@ def xyz_to_abc(x, y, z):
 
 def abc_to_xyz(a, b, c):
     """
-
-
     :param a:
     :param b:
     :param c:
@@ -72,6 +70,25 @@ def abc_to_xyz(a, b, c):
 
     return x, y, z
 
+
+def abc_to_xyz_arrays(a, b, c):
+    """
+    a, b, c are numpy arrays
+    :param a:
+    :param b:
+    :param c:
+    :return: x, y, z numpy arrays
+    """
+    points_xyz = []
+    for ai, bi, ci in zip(a, b, c):
+        points_xyz.append(abc_to_xyz(ai, bi, ci))
+    points_xyz = np.array(points_xyz)
+
+    x = np.array(points_xyz[:, 0])
+    y = np.array(points_xyz[:, 1])
+    z = np.array(points_xyz[:, 2])
+
+    return x, y, z
 
 def read_vpsdpts(INPUT):
     """
@@ -228,8 +245,6 @@ def fill_pore_type_matrix():
     with open('pore_centers.txt', 'w') as out:
         out.write('Box %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f \n' % (config.Lx, config.Ly, config.Lz, config.alpha_degree
                                                                   , config.beta_degree, config.gamma_degree))
-        # out.write("sphere \t xc \t yc \t zc \t diameter \t pore_type \n" )
-        # out.write("channel \t xc \t yc \t zc \t diameter \t ox \t oy \t oz \t pore_type \n" )
 
         for i, center_cord in enumerate(all_cluster_center_list_flatten):
             ac, bc, cc = center_cord
@@ -380,13 +395,14 @@ def dbscan(ak, bk, ck, periodic_distance_matrix, eps, min_samples):
 def best_cluster_center(ak, bk, ck, labels):
     """
 
+    ak, bk, ck are the coordinates of points within a bin
     Calculates the center of the cluster
 
     x_arr, y_arr, z_arr: numpy array of data points
     :param ak:
     :param bk:
     :param ck:
-    :param labels:
+    :param labels: labels assigned by dbscan
     labels: numpy array of length x_arr. Element of this array can be 0, 1, 2 ...
     :return:
     """
@@ -411,11 +427,14 @@ def best_cluster_center(ak, bk, ck, labels):
     c_center = np.zeros(Ncluster)
 
     # Center = mean over all the points with same labels
+    # The best cluster center should lie over the actual points
     for li in range(Ncluster):
         mask = labels == li  # all points with the same labels
         a_center[li] = np.mean(ak[mask])
         b_center[li] = np.mean(bk[mask])
         c_center[li] = np.mean(ck[mask])
+
+
 
     """
     # To calculate actual center of the cluster

@@ -3,18 +3,8 @@ import sys
 import numpy as np
 
 
-INPUT = sys.argv[1] # input file containing all parameters
+INPUT = sys.argv[1]  # input file containing all parameters
 
-"""
-INPUT = sys.argv[1] # vpsdpts file
-Lx = float(sys.argv[2])
-Ly = float(sys.argv[3])
-Lz = float(sys.argv[4])
-alpha_degree = float(sys.argv[5])
-beta_degree = float(sys.argv[6])
-gamma_degree = float(sys.argv[7])
-NumberOfPoreTypes = int(sys.argv[8])
-"""
 with open(INPUT) as inp:
     for line in inp:
         s = line.split()
@@ -65,4 +55,5 @@ all_cluster_orientation_list = []
 bin_index_of_points = []
 pore_type_count = 0
 # density of geometric points (1/Ang^3)
-rho = 50000/Volume_of_uc
+Nprobe = 50000
+rho = Nprobe/Volume_of_uc
