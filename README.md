@@ -9,6 +9,7 @@ Through the use of pyCOSMOS, the cubelets within the unit cell are designated as
 1. cython: `pip install cython`
 2. mayavi (for visualization): `pip install mayavi`
 3. openbabel (for converting cif to pdb): `sudo snap install openbabel`
+4. Python libraries: pandas, numpy, plotly, sklearn, matplotlib, os, glob.
 
 
 ## How to use?
