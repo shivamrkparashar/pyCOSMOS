@@ -4,7 +4,7 @@ import numpy as np
 
 import config
 
-fs = 12
+fs = 15
 rcParams['font.size'] = '%s' %fs
 
 
@@ -27,13 +27,13 @@ def plot_psd_bar_pore_type(bin_centers, pore_type_histogram):
              'pore_type_hist_4': pore_type_histogram[3]}
 
     df = pd.DataFrame(data =d)
-    df.to_csv('pore_type_histogram.dat', index = False)
+    df.to_csv('pore_type_histogram.dat', index = False, float_format = '%1.3f')
 
     width_bar = bin_centers[1] - bin_centers[0]
     norm = np.sum(pore_type_histogram)*width_bar # calculates sum over all element across dimensions
     pore_type_histogram /= norm
 
-    colors = ['red', 'green', 'blue', 'yellow'] #
+    colors = config.color_list 
 
     figure()
     for i in range(config.pore_type_count):

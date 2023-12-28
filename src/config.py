@@ -43,6 +43,9 @@ print("Unit cell: %1.3f %1.3f %1.3f %1.3f %1.3f %1.3f" %(Lx, Ly, Lz, alpha_degre
 print("Number of Pore types: ", NumberOfPoreTypes)
 print("Volume of uc [A^3]: %1.3f "%Volume_of_uc)
 
+# color_list for pore size distribution and mayavi visualization
+color_list = ['tomato', 'palegreen', 'turquoise', 'plum']
+
 # -2 represents empty, -1 represtnts noise as classified by dbscan
 pore_type_matrix_with_pore_type_labels = -2 * np.ones((int(ceil(Lx)), int(ceil(Ly)), int(ceil(Lz)))) # 3D pore type matrix
 pore_type_matrix_with_cluster_labels = -2 * np.ones((int(ceil(Lx)), int(ceil(Ly)), int(ceil(Lz)))) # 3D pore type matrix

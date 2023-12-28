@@ -76,8 +76,8 @@ def plot_pore_centers_mayavi():
     all_cluster_shape_list_flatten = [j for sub in config.all_cluster_shape_list for j in sub]
     all_cluster_orientation_list_flatten = [j for sub in config.all_cluster_orientation_list for j in sub]
 
-    # red, blue, green, yellow
-    shape_color = [(1, 0, 0), (0, 1, 0), (0, 0, 1), (1, 1, 0)]
+    # convert color to (r,g,b) between 0 and 1
+    shape_color_rgb = list(map(colors.to_rgb, config.color_list))
 
     draw_unit_cell_mayavi()
 
@@ -85,7 +85,7 @@ def plot_pore_centers_mayavi():
         ac, bc, cc = center_cord
         xc, yc, zc = abc_to_xyz(ac, bc, cc)
 
-        color = shape_color[all_cluster_pore_type_labels_flatten[i]-1]
+        color = shape_color_rgb[all_cluster_pore_type_labels_flatten[i]-1]
         if all_cluster_shape_list_flatten[i] == 'sphere':
 
             #plot_sphere(xc[i], yc[i], zc[i], all_cluster_diameter_list_flatten[i]/2,
@@ -117,7 +117,8 @@ def cif_to_pdb(ciffile):
 
     # Convert cif file into pdb using openbabel
     pdbfile = ciffile.replace('.cif', '.pdb')
-    os.system('obabel -icif %s -opdb -O%s' %(ciffile, pdbfile))
+    if not os.path.exists(pdbfile):
+        os.system('obabel -icif %s -opdb -O%s' %(ciffile, pdbfile))
 
     return pdbfile
 
@@ -173,6 +174,13 @@ def visualize_pdb(pdbfile):
     scene.scene.isometric_view()
     scene.scene.save('img_isometric.png')
 
+    
+    view_parameter_list = [(0, 30, 50), (0, 45, 50), (30, 0, 50), (45, 0, 50), (30, 30, 50), (30, 45, 50), (45, 45, 50)]
+        
+    for (azimuth, elevation, distance) in view_parameter_list:
+        mlab.view(azimuth=azimuth, elevation=elevation, distance=distance)
+        scene.scene.save(f'img_azimuth_{azimuth}_elevation_{elevation}_distance_{distance}.png')
+    """
     # custom 1
     scene.scene.camera.position = [52.05004265999461, 54.272623083262744, -124.47365033936694]
     scene.scene.camera.focal_point = [14.314302832764572, 13.977785034102457, 9.314656441821107]
@@ -199,6 +207,6 @@ def visualize_pdb(pdbfile):
     scene.scene.camera.clipping_range = [70.48147970504198, 240.27387800193512]
     scene.scene.camera.compute_view_plane_normal()
     scene.scene.save('img_custom3.png')
-
+    """
 
 
