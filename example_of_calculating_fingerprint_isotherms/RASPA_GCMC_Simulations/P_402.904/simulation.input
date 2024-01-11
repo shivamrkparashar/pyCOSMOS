@@ -1,0 +1,31 @@
+SimulationType                MonteCarlo
+NumberOfCycles                10001
+NumberOfInitializationCycles  5001
+PrintEvery                    5000
+
+RestartFile                   no
+Cutoff                        17
+Forcefield                    Local
+RemoveAtomNumberCodeFromLabel no
+UseChargesFromCIFFile         no
+ChargeMethod                  none
+
+Framework 0
+FrameworkName Cu-BTC
+UnitCells 2 2 2
+HeliumVoidFraction 0.725
+ExternalTemperature 87.29
+ExternalPressure 402.904
+
+Movies yes
+WriteMoviesEvery 1000
+
+Component 0 MoleculeName                argon
+            MoleculeDefinition          TraPPE
+            FugacityCoefficient         1.0
+            IdealGasRosenbluthWeight    1.0
+            TranslationProbability      0.5
+            ReinsertionProbability      0.5
+            SwapProbability     	1.0
+            CreateNumberOfMolecules     0
+

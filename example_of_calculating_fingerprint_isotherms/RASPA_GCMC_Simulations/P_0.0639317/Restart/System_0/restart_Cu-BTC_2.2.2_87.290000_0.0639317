@@ -1,0 +1,97 @@
+Cell info:
+========================================================================
+number-of-unit-cells: 2 2 2
+unit-cell-vector-a:    26.343000000000     0.000000000000     0.000000000000
+unit-cell-vector-b:     0.000000000000    26.343000000000     0.000000000000
+unit-cell-vector-c:     0.000000000000     0.000000000000    26.343000000000
+
+cell-vector-a:    52.686000000000     0.000000000000     0.000000000000
+cell-vector-b:     0.000000000000    52.686000000000     0.000000000000
+cell-vector-c:     0.000000000000     0.000000000000    52.686000000000
+
+cell-lengths:    26.343000000000    26.343000000000    26.343000000000
+cell-angles:    90.000000000000    90.000000000000    90.000000000000
+
+
+Maximum changes for MC-moves:
+========================================================================
+Maximum-volume-change: 0.000500
+Maximum-Gibbs-volume-change: 0.001563
+Maximum-box-shape-change: 0.100000 0.100000 0.100000, 0.100000 0.100000 0.100000, 0.100000 0.100000 0.100000
+
+
+Acceptance targets for MC-moves:
+========================================================================
+Target-volume-change: 0.500000
+Target-box-shape-change: 0.500000
+Target-Gibbs-volume-change: 0.500000
+
+
+Components: 1 (Adsorbates 8, Cations 0)
+========================================================================
+Component 0 (argon)
+	Fractional-molecule-id component 0: -1
+	Lambda-factors component 0:  0.000000
+	Number-of-biasing-factors component 0: 21
+	Biasing-factors component 0:  0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000 0.000000
+	Maximum-CF-Lambda-change component 0: 0.500000
+	Maximum-CBCF-Lambda-change component 0: 0.500000
+
+	Maximum-translation-change component 0: 0.500000,0.419558,0.480728
+	Maximum-translation-in-plane-change component 0: 0.000000,0.000000,0.000000
+	Maximum-rotation-change component 0: 0.017453 0.017453 0.017453
+
+Reactions: 0
+
+Component: 0     Adsorbate    8 molecules of argon NTotal (Gauge + Pore) = 0 
+------------------------------------------------------------------------
+Adsorbate-atom-position: 0 0     5.969541652030     6.731039698703     6.340872707193
+Adsorbate-atom-position: 1 0    20.076329580595    46.039928307394    46.976114309513
+Adsorbate-atom-position: 2 0    46.241581772094    33.183578920492     6.287423276179
+Adsorbate-atom-position: 3 0    31.159527129044    31.355612533967    48.013900188272
+Adsorbate-atom-position: 4 0    44.962068216702     7.255847946088    46.892995060361
+Adsorbate-atom-position: 5 0    31.837085606278    20.665903717018    47.285277809591
+Adsorbate-atom-position: 6 0    35.487738833371    43.965051426195    30.661726799333
+Adsorbate-atom-position: 7 0     7.150514459407    20.827788466453    19.270191383402
+Adsorbate-atom-velocity: 0 0     1.405030038907    -0.544355276590    -0.178472551263
+Adsorbate-atom-velocity: 1 0     2.954359508923     2.128135175278     0.435189659902
+Adsorbate-atom-velocity: 2 0    -3.470788786610     0.963619762218     0.454325563556
+Adsorbate-atom-velocity: 3 0    -0.538396710596    -0.082317921210    -2.015987393000
+Adsorbate-atom-velocity: 4 0    -2.207995884280     3.453748699201    -0.350570922232
+Adsorbate-atom-velocity: 5 0     1.838010755070     0.561505848313     0.139522278903
+Adsorbate-atom-velocity: 6 0     0.508967464072    -0.212453468125    -1.099956437574
+Adsorbate-atom-velocity: 7 0    -1.389355026717    -0.524027399939    -0.602193609791
+Adsorbate-atom-force:    0 0   110.122764752874  -140.737829093631   130.831652441204
+Adsorbate-atom-force:    1 0  -295.890420103561   314.209163260672  -314.741596154079
+Adsorbate-atom-force:    2 0   -40.505172457523   -27.536515120814    23.372357695266
+Adsorbate-atom-force:    3 0   206.727944589178  -738.116251598331  -447.488221474848
+Adsorbate-atom-force:    4 0   403.814945559721   241.942080499680  -126.217651698693
+Adsorbate-atom-force:    5 0   233.774323640388   321.091405585886  -347.669661851442
+Adsorbate-atom-force:    6 0  -281.793085199164  -201.526919172157    41.609335131206
+Adsorbate-atom-force:    7 0   -56.009451139565  -344.207926044929  -141.408974825723
+Adsorbate-atom-charge:   0 0     0.000000000000
+Adsorbate-atom-charge:   1 0     0.000000000000
+Adsorbate-atom-charge:   2 0     0.000000000000
+Adsorbate-atom-charge:   3 0     0.000000000000
+Adsorbate-atom-charge:   4 0     0.000000000000
+Adsorbate-atom-charge:   5 0     0.000000000000
+Adsorbate-atom-charge:   6 0     0.000000000000
+Adsorbate-atom-charge:   7 0     0.000000000000
+Adsorbate-atom-scaling:  0 0     1.000000000000
+Adsorbate-atom-scaling:  1 0     1.000000000000
+Adsorbate-atom-scaling:  2 0     1.000000000000
+Adsorbate-atom-scaling:  3 0     1.000000000000
+Adsorbate-atom-scaling:  4 0     1.000000000000
+Adsorbate-atom-scaling:  5 0     1.000000000000
+Adsorbate-atom-scaling:  6 0     1.000000000000
+Adsorbate-atom-scaling:  7 0     1.000000000000
+Adsorbate-atom-fixed:    0 0       0 0 0
+Adsorbate-atom-fixed:    1 0       0 0 0
+Adsorbate-atom-fixed:    2 0       0 0 0
+Adsorbate-atom-fixed:    3 0       0 0 0
+Adsorbate-atom-fixed:    4 0       0 0 0
+Adsorbate-atom-fixed:    5 0       0 0 0
+Adsorbate-atom-fixed:    6 0       0 0 0
+Adsorbate-atom-fixed:    7 0       0 0 0
+
+

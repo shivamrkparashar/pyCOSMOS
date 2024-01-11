@@ -1,0 +1,10 @@
+vpsdpts	 /home/shivam/Desktop/Automatic_compartmentalization/Program/pyCOSMOS/new_example/vpsdpts/ZIF-412.vpsdpts
+lx	 72.2050
+ly	 72.2050
+lz	 72.2050
+alpha	 90.0000
+beta	 90.0000
+gamma	 90.0000
+npore	 3
+eps	 3.000 
+nmin	 10 

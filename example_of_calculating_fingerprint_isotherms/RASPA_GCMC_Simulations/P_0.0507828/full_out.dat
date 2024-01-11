@@ -1,0 +1,2 @@
+Pressure[atm]	Pressure[kPa]	A.Ads[cm^3/g]	std	A.Ads[molec/uc]	std	Iso_Heat[kJ/mol]	std	Drift	TotalTime[h]
+5.0119e-07      5.0783e-05          1.498969    0.09        0.653561    0.04        14.61466            0.07   1.6e-10      0.22

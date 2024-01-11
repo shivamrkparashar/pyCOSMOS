@@ -1,0 +1,73 @@
+INPUT is  input_pycosmos.dat
+Unit cell: 38.512 38.512 38.512 90.000 90.000 90.000
+Number of Pore types:  2
+Volume of uc [A^3]: 57120.003 
+nbins =  19
+
+================================================================
+Currently at nbin = 18
+
+Average geometric diameter of bin: 24.3 Ang
+DBSCAN parameters, 2.500, 30.0 
+
+Number of clusters identified = 2 
+--------------- Cluster # 0 ---------------
+Center (a, b, c) = 19.3, 19.2, 19.2
+shape = sphere
+Diameter = 23.61 
+
+--------------- Cluster # 1 ---------------
+Center (a, b, c) = 38.2, 0.196, 0.0798
+shape = sphere
+Diameter = 23.76 
+
+Number of points per cluster = 6090
+Points per cluster required for a spherical primary bin = 6553 
+New pore type identified, pore type count =  1
+
+================================================================
+Currently at nbin = 10
+
+Average geometric diameter of bin: 16.5 Ang
+DBSCAN parameters, 2.500, 30.0 
+
+Number of clusters identified = 6 
+--------------- Cluster # 0 ---------------
+Center (a, b, c) = 38.2, 19.3, 19.2
+shape = sphere
+Diameter = 14.14 
+
+--------------- Cluster # 1 ---------------
+Center (a, b, c) = 19.2, 0.236, 19.2
+shape = sphere
+Diameter = 13.93 
+
+--------------- Cluster # 2 ---------------
+Center (a, b, c) = 37.9, 38.5, 19.1
+shape = sphere
+Diameter = 13.75 
+
+--------------- Cluster # 3 ---------------
+Center (a, b, c) = 19.4, 38.5, 1.12
+shape = sphere
+Diameter = 14.33 
+
+--------------- Cluster # 4 ---------------
+Center (a, b, c) = 19.2, 19.2, 0.556
+shape = sphere
+Diameter = 13.86 
+
+--------------- Cluster # 5 ---------------
+Center (a, b, c) = 37.9, 19.4, 0.367
+shape = sphere
+Diameter = 13.88 
+
+Number of points per cluster = 1253
+Points per cluster required for a spherical primary bin = 2078 
+New pore type identified, pore type count =  2
+===================================================================
+All Primary bins identified
+Number of pore types = 2
+Analyzing the secondary bins
+Updating pore type matrix
+-------------------------
