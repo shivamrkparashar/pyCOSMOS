@@ -3,7 +3,7 @@ pyCOSMOS partitions the unit cell of a MOF into distinct pore compartments.
 The unit cell is subdivided into cubelets, which are then classified into a pore types. 
 For instance, PCN-224 comprises two pore types. 
 Through the use of pyCOSMOS, the cubelets within the unit cell are designated as green or yellow, representing the channel and interaction pores, respectively.
-![image](img/preview_compartmentalization.png)
+![image](img/TOC.TIF)
 
 ## Requirements
 1. cython: `pip install cython`
@@ -64,3 +64,10 @@ html file (can be viewed on browser)-
 xyz files: for each primary bin in the pore size distribution. Additional xyz files for each cluster within a bin.
 
 png files: characteristic snapshots of the framework with pores visualized as cages or channels.
+
+# References
+1. Pore Structure Compartmentalization for Advanced Characterization of Metal–Organic Framework Materials
+Shivam Parashar and Alexander V. Neimark
+Journal of Chemical Information and Modeling
+DOI: 10.1021/acs.jcim.3c01872
+
