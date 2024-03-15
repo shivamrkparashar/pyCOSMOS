@@ -1,0 +1,4 @@
+# Exclude the directory from language detection
+example_of_compartmentalization/* linguist-vendored
+example_of_calculating_fingerprint_isotherms/* linguist-vendored
+
